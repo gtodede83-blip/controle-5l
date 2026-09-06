@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Controle 5L</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:#18202a;font-family:Arial,sans-serif}
+header{background:#111827;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:3}
+header h1{margin:0;font-size:22px}header p{margin:5px 0 0;font-size:12px;opacity:.75}
+main{max-width:650px;margin:auto;padding:15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card,.panel{background:#fff;border-radius:14px;padding:15px;box-shadow:0 2px 10px #00000010}.card span{font-size:13px;color:#66717d}.card strong{display:block;font-size:21px;margin-top:5px}
+nav{display:grid;gap:10px;margin:14px 0}.btn{border:0;border-radius:12px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;width:100%}
+.green{background:#16a34a;color:#fff}.yellow{background:#facc15;color:#111}.dark{background:#111827;color:#fff}.white{background:#fff;border:1px solid #d7dce1}
+section{display:none;margin-top:12px}.show{display:block}
+label{font-weight:700;font-size:14px;display:block;margin:12px 0 6px}input,select{width:100%;padding:13px;border:1px solid #cdd4db;border-radius:9px;font-size:16px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.line{padding:12px 0;border-bottom:1px solid #eee}.muted{font-size:12px;color:#6b7280}.tag{display:inline-block;padding:4px 7px;border-radius:7px;font-size:11px;font-weight:700}.paid{background:#dcfce7;color:#166534}.open{background:#fef3c7;color:#92400e}
+.total{font-size:20px;font-weight:800;margin:12px 0}.danger{color:#b91c1c}.ok{color:#15803d}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:9px;border-bottom:1px solid #eee}
+footer{text-align:center;color:#7b8490;font-size:11px;padding:25px}
+</style>
+</head>
+<body>
+<header><h1>📦 Controle 5L</h1><p>Venda • Fiado • Estoque • Prestação de contas</p></header>
+<main>
+
+<div id="home" class="show">
+<div class="grid">
+<div class="card"><span>Vendas hoje</span><strong id="hVendas">R$ 0,00</strong></div>
+<div class="card"><span>Fiado em aberto</span><strong id="hFiado">R$ 0,00</strong></div>
+<div class="card"><span>Unidades vendidas</span><strong id="hQtd">0</strong></div>
+<div class="card"><span>Estoque</span><strong id="hEstoque">0</strong></div>
+</div>
+<nav>
+<button class="btn green" onclick="abrir('venda')">➕ Nova venda</button>
+<button class="btn yellow" onclick="abrir('fiado')">📝 Nova venda fiada</button>
+<button class="btn dark" onclick="abrir('receber')">💰 Receber fiado</button>
+<button class="btn white" onclick="abrir('estoque')">📦 Estoque</button>
+<button class="btn white" onclick="abrir('relatorio')">📊 Prestação de contas</button>
+<button class="btn white" onclick="abrir('config')">⚙️ Abastecer / Produtos</button>
+</nav>
+</div>
+
+<section id="venda" class="panel"><button class="btn white" onclick="abrir('home')">← Voltar</button><h2>Nova venda</h2>
+<label>Produto</label><select id="vProd" onchange="precoPadrao('v')"></select>
+<div class="row"><div><label>Quantidade</label><input id="vQtd" type="number" min="1" value="1"></div><div><label>Preço que ela vendeu</label><input id="vPreco" type="number" step="0.01" min="0"></div></div>
+<p class="muted">O preço pode ser R$ 20, R$ 25 ou qualquer outro valor.</p>
+<button class="btn green" onclick="vender(false)">SALVAR VENDA</button></section>
+
+<section id="fiado" class="panel"><button class="btn white" onclick="abrir('home')">← Voltar</button><h2>Nova venda fiada</h2>
+<label>Cliente</label><input id="fCliente" placeholder="Nome de quem ficou devendo">
+<label>Produto</label><select id="fProd" onchange="precoPadrao('f')"></select>
+<div class="row"><div><label>Quantidade</label><input id="fQtd" type="number" min="1" value="1"></div><div><label>Preço que ela vendeu</label><input id="fPreco" type="number" step="0.01" min="0"></div></div>
+<button class="btn yellow" onclick="vender(true)">REGISTRAR FIADO</button></section>
+
+<section id="receber" class="panel"><button class="btn white" onclick="abrir('home')">← Voltar</button><h2>Fiados em aberto</h2><div id="fiados"></div></section>
+
+<section id="estoque" class="panel"><button class="btn white" onclick="abrir('home')">← Voltar</button><h2>Estoque atual</h2><div id="estoque"></div></section>
+
+<section id="relatorio" class="panel"><button class="btn white" onclick="abrir('home')">← Voltar</button><h2>Prestação de contas</h2><div id="rel"></div><button class="btn green" onclick="whatsapp()">📤 Enviar pelo WhatsApp</button></section>
+
+<section id="config" class="panel"><button class="btn white" onclick="abrir('home')">← Voltar</button><h2>Abastecer / Produtos</h2>
+<label>Produto</label><input id="pNome" placeholder="Ex.: Produto 5L">
+<div class="row"><div><label>Seu custo</label><input id="pCusto" type="number" step="0.01" value="8.00"></div><div><label>Repasse para sua mãe</label><input id="pRepasse" type="number" step="0.01" value="14.99"></div></div>
+<label>Quantidade levada</label><input id="pQtd" type="number" min="1" value="1">
+<button class="btn dark" onclick="abastecer()">SALVAR ABASTECIMENTO</button>
+<div id="produtos" style="margin-top:15px"></div></section>
+
+<footer>Versão de teste. Nesta versão os dados ficam salvos neste aparelho.</footer>
+</main>
+
+<script>
+const K='controle5l_v2';
+let db=JSON.parse(localStorage.getItem(K)||'{"produtos":[],"vendas":[],"fiados":[],"recebimentos":[]}');
+const hoje=()=>new Date().toISOString().slice(0,10);
+const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const pById=id=>db.produtos.find(p=>p.id===id);
+function save(){localStorage.setItem(K,JSON.stringify(db));render()}
+function estoque(p){return p.qtdInicial-db.vendas.filter(v=>v.produtoId===p.id).reduce((s,v)=>s+v.qtd,0)}
+function abrir(id){document.querySelectorAll('section,#home').forEach(x=>x.classList.remove('show'));document.getElementById(id).classList.add('show');render()}
+function selects(){
+ const opts=db.produtos.map(p=>`<option value="${p.id}">${p.nome}</option>`).join('');
+ document.getElementById('vProd').innerHTML=opts;document.getElementById('fProd').innerHTML=opts;
+}
+function precoPadrao(tipo){
+ const id=document.getElementById(tipo==='v'?'vProd':'fProd').value,p=pById(id);
+ if(p)document.getElementById(tipo==='v'?'vPreco':'fPreco').value=p.repasse;
+}
+function vender(isFiado){
+ const prodId=document.getElementById(isFiado?'fProd':'vProd').value;
+ const qtd=Number(document.getElementById(isFiado?'fQtd':'vQtd').value);
+ const preco=Number(document.getElementById(isFiado?'fPreco':'vPreco').value);
+ const p=pById(prodId);
+ if(!p||qtd<1||preco<=0)return alert('Preencha produto, quantidade e preço.');
+ if(estoque(p)<qtd)return alert('Estoque insuficiente.');
+ if(isFiado){
+   const cliente=document.getElementById('fCliente').value.trim();
+   if(!cliente)return alert('Informe o nome do cliente.');
+   const id=crypto.randomUUID(),v={id,produtoId:prodId,qtd,preco,total:qtd*preco,data:hoje(),fiado:true};
+   db.vendas.push(v);db.fiados.push({id,cliente,vendaId:id,total:v.total,pago:0});
+ }else db.vendas.push({id:crypto.randomUUID(),produtoId:prodId,qtd,preco,total:qtd*preco,data:hoje(),fiado:false});
+ save();alert(isFiado?'Fiado registrado!':'Venda registrada!');abrir('home');
+}
+function abastecer(){
+ const nome=document.getElementById('pNome').value.trim(),custo=Number(document.getElementById('pCusto').value),rep=Number(document.getElementById('pRepasse').value),qtd=Number(document.getElementById('pQtd').value);
+ if(!nome||custo<0||rep<0||qtd<1)return alert('Preencha os dados corretamente.');
+ let p=db.produtos.find(x=>x.nome.toLowerCase()===nome.toLowerCase());
+ if(!p){p={id:crypto.randomUUID(),nome,custo,repasse:rep,qtdInicial:0};db.produtos.push(p)}
+ p.custo=custo;p.repasse=rep;p.qtdInicial+=qtd;
+ save();alert(`Abastecimento registrado. Seu lucro por unidade: ${money(rep-custo)}`);
+ document.getElementById('pNome').value='';
+}
+function receber(id){
+ const f=db.fiados.find(x=>x.id===id),aberto=f.total-f.pago;
+ const val=Number(prompt(`Valor recebido de ${f.cliente}:`,aberto.toFixed(2)));
+ if(!val||val<=0)return;
+ f.pago=Math.min(f.total,f.pago+val);db.recebimentos.push({fiadoId:id,valor:val,data:hoje()});save();
+}
+function render(){
+ selects();
+ const vh=db.vendas.filter(v=>v.data===hoje()),normal=vh.filter(v=>!v.fiado).reduce((s,v)=>s+v.total,0),qtd=vh.reduce((s,v)=>s+v.qtd,0);
+ document.getElementById('hVendas').textContent=money(normal);
+ document.getElementById('hFiado').textContent=money(db.fiados.reduce((s,f)=>s+Math.max(0,f.total-f.pago),0));
+ document.getElementById('hQtd').textContent=qtd;
+ document.getElementById('hEstoque').textContent=db.produtos.reduce((s,p)=>s+estoque(p),0);
+
+ document.getElementById('estoque').innerHTML=db.produtos.map(p=>`<div class="line"><b>${p.nome}</b><br><span class="muted">Estoque:</span> <b>${estoque(p)}</b> un. • Repasse: ${money(p.repasse)} • Custo: ${money(p.custo)} • Seu lucro/un.: <span class="ok">${money(p.repasse-p.custo)}</span></div>`).join('')||'<p>Nenhum produto cadastrado.</p>';
+
+ document.getElementById('fiados').innerHTML=db.fiados.filter(f=>f.pago<f.total).map(f=>`<div class="line"><b>${f.cliente}</b><br>${money(f.total-f.pago)} em aberto <button class="btn green" style="padding:9px;margin-top:8px" onclick="receber('${f.id}')">RECEBER</button></div>`).join('')||'<p>Nenhum fiado em aberto.</p>';
+
+ document.getElementById('produtos').innerHTML=db.produtos.map(p=>`<div class="line"><b>${p.nome}</b><br>Levado: ${p.qtdInicial} un. • Atual: ${estoque(p)} un.<br>Custo: ${money(p.custo)} • Repasse: ${money(p.repasse)} • Seu lucro: ${money(p.repasse-p.custo)}/un.</div>`).join('');
+
+ const total=vh.reduce((s,v)=>s+v.total,0),fiado=vh.filter(v=>v.fiado).reduce((s,v)=>s+v.total,0),normalHoje=total-fiado;
+ document.getElementById('rel').innerHTML=`<p><b>Data:</b> ${new Date().toLocaleDateString('pt-BR')}</p><table><tr><th>Indicador</th><th>Valor</th></tr><tr><td>Unidades vendidas</td><td>${qtd}</td></tr><tr><td>Vendas normais</td><td>${money(normalHoje)}</td></tr><tr><td>Fiado hoje</td><td>${money(fiado)}</td></tr><tr><td>Fiado em aberto</td><td>${money(db.fiados.reduce((s,f)=>s+Math.max(0,f.total-f.pago),0))}</td></tr><tr><td>Estoque atual</td><td>${db.produtos.reduce((s,p)=>s+estoque(p),0)} unidades</td></tr></table>`;
+ if(db.produtos.length){precoPadrao('v');precoPadrao('f')}
+}
+function whatsapp(){
+ const txt=`PRESTAÇÃO DE CONTAS - ${new Date().toLocaleDateString('pt-BR')}\\nUnidades vendidas hoje: ${document.getElementById('hQtd').textContent}\\nVendas normais: ${document.getElementById('rel').querySelectorAll('tr')[2]?.children[1]?.innerText||''}\\nFiado em aberto: ${document.getElementById('hFiado').textContent}\\nEstoque: ${document.getElementById('hEstoque').textContent} unidades`;
+ location.href='https://wa.me/?text='+encodeURIComponent(txt);
+}
+render();
+</script>
+</body>
+</html>
