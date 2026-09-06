@@ -1,501 +1,461 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
 <title>Controle 5L</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+    box-sizing:border-box;
+}
 
 body{
-  margin:0;
-  background:#f4f6f8;
-  color:#18202a;
-  font-family:Arial,sans-serif
+    margin:0;
+    background:#f3f4f6;
+    color:#111827;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 header{
-  background:#111827;
-  color:#fff;
-  padding:18px 16px;
-  position:sticky;
-  top:0;
-  z-index:10
+    background:#111827;
+    color:white;
+    padding:20px;
 }
 
 header h1{
-  margin:0;
-  font-size:24px
+    margin:0;
+    font-size:25px;
 }
 
 header p{
-  margin:5px 0 0;
-  font-size:13px;
-  opacity:.8
+    margin:5px 0 0;
+    font-size:13px;
+    opacity:.75;
 }
 
 main{
-  max-width:700px;
-  margin:auto;
-  padding:15px
+    width:100%;
+    max-width:680px;
+    margin:auto;
+    padding:18px;
 }
 
 .status{
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:12px;
-  font-weight:bold;
-  font-size:14px
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:14px;
+    font-weight:bold;
+    font-size:14px;
 }
 
 .status.ok{
-  background:#dcfce7;
-  color:#15803d
+    background:#dcfce7;
+    color:#166534;
 }
 
 .status.erro{
-  background:#fee2e2;
-  color:#b91c1c
+    background:#fee2e2;
+    color:#991b1b;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
 }
 
 .card{
-  background:#fff;
-  border-radius:14px;
-  padding:15px;
-  box-shadow:0 2px 10px #00000010
+    background:white;
+    padding:17px;
+    border-radius:15px;
+    box-shadow:0 3px 12px #00000010;
 }
 
 .card span{
-  font-size:13px;
-  color:#66717d
+    color:#64748b;
+    font-size:13px;
 }
 
 .card strong{
-  display:block;
-  font-size:21px;
-  margin-top:5px
+    display:block;
+    margin-top:5px;
+    font-size:22px;
 }
 
 nav{
-  display:grid;
-  gap:10px;
-  margin:14px 0
+    display:grid;
+    gap:11px;
+    margin-top:18px;
+}
+
+button{
+    font-family:inherit;
 }
 
 .btn{
-  border:0;
-  border-radius:12px;
-  padding:15px;
-  font-weight:700;
-  font-size:15px;
-  cursor:pointer;
-  width:100%
+    width:100%;
+    border:0;
+    border-radius:12px;
+    padding:16px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 .btn:active{
-  transform:scale(.98)
+    transform:scale(.98);
 }
 
 .green{
-  background:#16a34a;
-  color:#fff
+    background:#16a34a;
+    color:white;
 }
 
 .yellow{
-  background:#facc15;
-  color:#111
+    background:#facc15;
+    color:#111827;
 }
 
 .dark{
-  background:#111827;
-  color:#fff
+    background:#111827;
+    color:white;
 }
 
-.white{
-  background:#fff;
-  border:1px solid #d7dce1;
-  color:#111
+.blue{
+    background:#2563eb;
+    color:white;
 }
 
 .red{
-  background:#dc2626;
-  color:#fff
+    background:#dc2626;
+    color:white;
 }
 
-section{
-  display:none;
-  margin-top:12px
+.white{
+    background:white;
+    color:#111827;
+    border:1px solid #d1d5db;
 }
 
-section.show{
-  display:block
+
+/* =====================================
+   JANELA FLUTUANTE
+===================================== */
+
+.modal-bg{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.62);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    z-index:9999;
 }
 
-.panel{
-  background:#fff;
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 2px 10px #00000010
+.modal-bg.show{
+    display:flex;
 }
 
-.panel h2{
-  margin-top:0
+.modal{
+    width:100%;
+    max-width:600px;
+    max-height:90vh;
+    overflow:auto;
+    background:white;
+    border-radius:18px;
+    box-shadow:0 20px 60px #0008;
+    animation:abrir .18s ease;
 }
+
+@keyframes abrir{
+    from{
+        opacity:0;
+        transform:translateY(20px) scale(.98);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+.modal-header{
+    position:sticky;
+    top:0;
+    z-index:2;
+    background:white;
+    border-bottom:1px solid #e5e7eb;
+    padding:17px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-header h2{
+    margin:0;
+    font-size:20px;
+}
+
+.close{
+    border:0;
+    background:#f1f5f9;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.modal-body{
+    padding:18px;
+}
+
+
+/* =====================================
+   FORMULÁRIOS
+===================================== */
 
 label{
-  display:block;
-  font-weight:bold;
-  font-size:13px;
-  margin:12px 0 6px
+    display:block;
+    margin:13px 0 6px;
+    font-size:13px;
+    font-weight:bold;
 }
 
-input,select{
-  width:100%;
-  padding:13px;
-  border:1px solid #d1d5db;
-  border-radius:10px;
-  font-size:15px;
-  background:#fff
+input,
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    font-size:15px;
+    background:white;
 }
 
 .row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
-.line{
-  border-bottom:1px solid #e5e7eb;
-  padding:12px 0
+.info{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:12px;
 }
 
-.line:last-child{
-  border-bottom:0
+.info strong{
+    font-size:20px;
+}
+
+.lista{
+    display:grid;
+    gap:10px;
+}
+
+.item{
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:14px;
+}
+
+.item-title{
+    font-weight:bold;
+    font-size:16px;
 }
 
 .muted{
-  color:#6b7280
+    color:#64748b;
+    font-size:13px;
+}
+
+.valor{
+    font-weight:bold;
+    font-size:18px;
 }
 
 .ok{
-  color:#15803d;
-  font-weight:bold
+    color:#15803d;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:#fff
+.perigo{
+    color:#dc2626;
 }
 
-th,td{
-  padding:10px;
-  border-bottom:1px solid #e5e7eb;
-  text-align:left
-}
-
-th{
-  background:#f3f4f6
-}
-
-.back{
-  margin-bottom:12px
-}
-
-.empty{
-  color:#6b7280;
-  padding:10px 0
+.vazio{
+    text-align:center;
+    padding:25px;
+    color:#64748b;
 }
 
 footer{
-  text-align:center;
-  padding:25px;
-  color:#6b7280;
-  font-size:12px
+    text-align:center;
+    padding:30px 15px;
+    color:#64748b;
+    font-size:12px;
 }
 
+
+/* MOBILE */
+
 @media(max-width:500px){
-  .grid,.row{
-    grid-template-columns:1fr
-  }
+
+    .grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+    .modal{
+        max-height:94vh;
+    }
+
 }
+
 </style>
+
 </head>
+
 
 <body>
 
 <header>
-  <h1>Controle 5L</h1>
-  <p>Controle de produtos, estoque, vendas e fiados</p>
+
+<h1>Controle 5L</h1>
+
+<p>Controle de produtos, estoque, vendas e fiados</p>
+
 </header>
+
 
 <main>
 
-  <div id="status" class="status">
-    Conectando...
-  </div>
+<div id="status"
+     class="status ok">
+    Conectando ao Supabase...
+</div>
 
-  <!-- HOME -->
-  <div id="home" class="show">
 
-    <div class="grid">
+<div class="grid">
 
-      <div class="card">
-        <span>Vendas hoje</span>
-        <strong id="hVendas">R$ 0,00</strong>
-      </div>
+<div class="card">
+<span>Vendas hoje</span>
+<strong id="hVendas">R$ 0,00</strong>
+</div>
 
-      <div class="card">
-        <span>Fiado em aberto</span>
-        <strong id="hFiado">R$ 0,00</strong>
-      </div>
+<div class="card">
+<span>Fiado em aberto</span>
+<strong id="hFiado">R$ 0,00</strong>
+</div>
 
-      <div class="card">
-        <span>Unidades vendidas</span>
-        <strong id="hQtd">0</strong>
-      </div>
+<div class="card">
+<span>Unidades vendidas</span>
+<strong id="hQtd">0</strong>
+</div>
 
-      <div class="card">
-        <span>Estoque atual</span>
-        <strong id="hEstoque">0</strong>
-      </div>
+<div class="card">
+<span>Estoque atual</span>
+<strong id="hEstoque">0</strong>
+</div>
 
-    </div>
+</div>
 
-    <nav>
 
-      <button class="btn green" onclick="abrir('venda')">
-        💰 REGISTRAR VENDA
-      </button>
+<nav>
 
-      <button class="btn yellow" onclick="abrir('fiado')">
-        🧾 REGISTRAR FIADO
-      </button>
+<button class="btn green"
+        onclick="abrirModal('venda')">
+💰 REGISTRAR VENDA
+</button>
 
-      <button class="btn dark" onclick="abrir('config')">
-        📦 ABASTECER ESTOQUE
-      </button>
+<button class="btn yellow"
+        onclick="abrirModal('fiado')">
+📒 REGISTRAR FIADO
+</button>
 
-      <button class="btn white" onclick="abrir('estoqueSec')">
-        📊 VER ESTOQUE
-      </button>
+<button class="btn dark"
+        onclick="abrirModal('abastecer')">
+📦 ABASTECER ESTOQUE
+</button>
 
-      <button class="btn white" onclick="abrir('fiadosSec')">
-        👥 VER FIADOS
-      </button>
+<button class="btn white"
+        onclick="abrirModal('estoque')">
+📊 VER ESTOQUE
+</button>
 
-      <button class="btn white" onclick="abrir('relatorio')">
-        📋 RELATÓRIO
-      </button>
+<button class="btn blue"
+        onclick="abrirModal('clientes')">
+👥 CLIENTES
+</button>
 
-      <button class="btn green" onclick="whatsapp()">
-        📲 COMPARTILHAR NO WHATSAPP
-      </button>
+<button class="btn white"
+        onclick="abrirModal('relatorio')">
+📋 RELATÓRIO
+</button>
 
-    </nav>
-
-  </div>
-
-
-  <!-- VENDA -->
-  <section id="venda">
-
-    <div class="panel">
-
-      <button class="btn white back" onclick="abrir('home')">
-        ← VOLTAR
-      </button>
-
-      <h2>Registrar Venda</h2>
-
-      <label>Produto</label>
-      <select id="vProd" onchange="precoPadrao('v')"></select>
-
-      <div class="row">
-
-        <div>
-          <label>Quantidade</label>
-          <input id="vQtd" type="number" min="1" value="1">
-        </div>
-
-        <div>
-          <label>Preço</label>
-          <input id="vPreco" type="number" min="0" step="0.01">
-        </div>
-
-      </div>
-
-      <br>
-
-      <button class="btn green" onclick="vender(false)">
-        REGISTRAR VENDA
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- FIADO -->
-  <section id="fiado">
-
-    <div class="panel">
-
-      <button class="btn white back" onclick="abrir('home')">
-        ← VOLTAR
-      </button>
-
-      <h2>Registrar Fiado</h2>
-
-      <label>Cliente</label>
-      <input id="fCliente" placeholder="Nome do cliente">
-
-      <label>Produto</label>
-      <select id="fProd" onchange="precoPadrao('f')"></select>
-
-      <div class="row">
-
-        <div>
-          <label>Quantidade</label>
-          <input id="fQtd" type="number" min="1" value="1">
-        </div>
-
-        <div>
-          <label>Preço</label>
-          <input id="fPreco" type="number" min="0" step="0.01">
-        </div>
-
-      </div>
-
-      <br>
-
-      <button class="btn yellow" onclick="vender(true)">
-        REGISTRAR FIADO
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- ABASTECER -->
-  <section id="config">
-
-    <div class="panel">
-
-      <button class="btn white back" onclick="abrir('home')">
-        ← VOLTAR
-      </button>
-
-      <h2>Abastecer / Produtos</h2>
-
-      <label>Produto</label>
-      <input id="pNome" placeholder="Ex.: Produto 5L">
-
-      <div class="row">
-
-        <div>
-          <label>Seu custo</label>
-          <input id="pCusto" type="number" step="0.01" value="8">
-        </div>
-
-        <div>
-          <label>Preço de repasse</label>
-          <input id="pRepasse" type="number" step="0.01" value="14.99">
-        </div>
-
-      </div>
-
-      <label>Quantidade recebida</label>
-      <input id="pQtd" type="number" min="1" value="1">
-
-      <br><br>
-
-      <button class="btn dark" onclick="abastecer()">
-        SALVAR ABASTECIMENTO
-      </button>
-
-      <div id="produtos" style="margin-top:15px"></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ESTOQUE -->
-  <section id="estoqueSec">
-
-    <div class="panel">
-
-      <button class="btn white back" onclick="abrir('home')">
-        ← VOLTAR
-      </button>
-
-      <h2>Estoque Atual</h2>
-
-      <div id="estoque"></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- FIADOS -->
-  <section id="fiadosSec">
-
-    <div class="panel">
-
-      <button class="btn white back" onclick="abrir('home')">
-        ← VOLTAR
-      </button>
-
-      <h2>Fiados em Aberto</h2>
-
-      <div id="fiados"></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- RELATÓRIO -->
-  <section id="relatorio">
-
-    <div class="panel">
-
-      <button class="btn white back" onclick="abrir('home')">
-        ← VOLTAR
-      </button>
-
-      <h2>Relatório</h2>
-
-      <div id="rel"></div>
-
-    </div>
-
-  </section>
+</nav>
 
 </main>
 
+
 <footer>
-  Controle 5L — Sistema de controle de estoque e vendas
+Controle 5L • Sistema online
 </footer>
+
+
+
+<!-- =========================================
+     MODAL
+========================================= -->
+
+<div id="modalBg"
+     class="modal-bg"
+     onclick="fecharFora(event)">
+
+<div class="modal"
+     id="modal">
+
+<div class="modal-header">
+
+<h2 id="modalTitulo">
+Controle 5L
+</h2>
+
+<button class="close"
+        onclick="fecharModal()">
+×
+</button>
+
+</div>
+
+<div class="modal-body"
+     id="modalConteudo">
+</div>
+
+</div>
+
+</div>
+
 
 
 <script>
 
-/* ================================
-   CONFIGURAÇÃO SUPABASE
-================================ */
+/* =========================================
+   SUPABASE
+========================================= */
 
 const SUPABASE_URL =
 'https://gwpikrmgbtyjjgsfutup.supabase.co';
@@ -505,1157 +465,2015 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 
-/* ================================
-   BANCO LOCAL
-================================ */
+/* =========================================
+   DADOS
+========================================= */
 
-const K = 'controle5l_v3';
-
-let db = {
-  produtos: [],
-  vendas: [],
-  fiados: [],
-  recebimentos: []
-};
+let produtos = [];
+let vendas = [];
+let clientes = [];
+let abastecimentos = [];
+let pagamentos = [];
+let ajustes = [];
 
 
-/* ================================
+/* =========================================
    FUNÇÕES BÁSICAS
-================================ */
+========================================= */
 
 function hoje(){
 
-  const d = new Date();
+    const d = new Date();
 
-  const ano = d.getFullYear();
-  const mes = String(d.getMonth()+1).padStart(2,'0');
-  const dia = String(d.getDate()).padStart(2,'0');
+    const ano = d.getFullYear();
 
-  return `${ano}-${mes}-${dia}`;
+    const mes =
+        String(d.getMonth()+1).padStart(2,'0');
+
+    const dia =
+        String(d.getDate()).padStart(2,'0');
+
+    return `${ano}-${mes}-${dia}`;
 }
 
 
-function money(v){
+function dinheiro(valor){
 
-  return Number(v || 0).toLocaleString(
-    'pt-BR',
-    {
-      style:'currency',
-      currency:'BRL'
-    }
-  );
+    return Number(valor || 0)
+        .toLocaleString(
+            'pt-BR',
+            {
+                style:'currency',
+                currency:'BRL'
+            }
+        );
+}
+
+
+function numero(valor){
+
+    return Number(valor || 0);
 }
 
 
 function idNovo(){
 
-  if(window.crypto && crypto.randomUUID){
+    if(window.crypto &&
+       crypto.randomUUID){
 
-    return crypto.randomUUID();
-
-  }
-
-  return Date.now().toString(36) +
-         Math.random().toString(36).slice(2);
-}
-
-
-function pById(id){
-
-  return db.produtos.find(
-    p => p.id === id
-  );
-}
-
-
-/* ================================
-   CARREGAR BANCO LOCAL
-================================ */
-
-function carregarLocal(){
-
-  try{
-
-    const salvo =
-      localStorage.getItem(K);
-
-    if(salvo){
-
-      const dados = JSON.parse(salvo);
-
-      db = {
-
-        produtos:
-          Array.isArray(dados.produtos)
-          ? dados.produtos
-          : [],
-
-        vendas:
-          Array.isArray(dados.vendas)
-          ? dados.vendas
-          : [],
-
-        fiados:
-          Array.isArray(dados.fiados)
-          ? dados.fiados
-          : [],
-
-        recebimentos:
-          Array.isArray(dados.recebimentos)
-          ? dados.recebimentos
-          : []
-
-      };
+        return crypto.randomUUID();
 
     }
 
-  }catch(e){
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+        .replace(/[xy]/g,function(c){
 
-    console.error(e);
+            const r =
+                Math.random()*16|0;
 
-    db = {
-      produtos:[],
-      vendas:[],
-      fiados:[],
-      recebimentos:[]
-    };
+            const v =
+                c==='x'
+                ? r
+                : (r&0x3|0x8);
 
-  }
+            return v.toString(16);
+
+        });
+}
+
+
+function produtoPorId(id){
+
+    return produtos.find(
+        p => p.id === id
+    );
+}
+
+
+function clientePorId(id){
+
+    return clientes.find(
+        c => c.id === id
+    );
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+function status(texto,erro=false){
+
+    const el =
+        document.getElementById('status');
+
+    el.textContent =
+        texto;
+
+    el.className =
+        'status ' +
+        (erro ? 'erro' : 'ok');
 
 }
 
 
-/* ================================
-   SALVAR
-================================ */
+/* =========================================
+   CARREGAR BANCO
+========================================= */
 
-function save(){
+async function carregar(){
 
-  localStorage.setItem(
-    K,
-    JSON.stringify(db)
-  );
+    try{
 
-  render();
+        status('Conectando ao Supabase...');
+
+        const p =
+            await supabaseClient
+                .from('produtos')
+                .select('*')
+                .order('nome');
+
+        if(p.error)
+            throw p.error;
+
+        produtos =
+            p.data || [];
+
+
+        const v =
+            await supabaseClient
+                .from('vendas')
+                .select('*')
+                .order('data',{ascending:false});
+
+        if(v.error)
+            throw v.error;
+
+        vendas =
+            v.data || [];
+
+
+        const c =
+            await supabaseClient
+                .from('clientes')
+                .select('*')
+                .order('nome');
+
+        if(c.error)
+            throw c.error;
+
+        clientes =
+            c.data || [];
+
+
+        const a =
+            await supabaseClient
+                .from('abastecimentos')
+                .select('*');
+
+        if(a.error)
+            throw a.error;
+
+        abastecimentos =
+            a.data || [];
+
+
+        const pg =
+            await supabaseClient
+                .from('pagamentos')
+                .select('*');
+
+        if(pg.error)
+            throw pg.error;
+
+        pagamentos =
+            pg.data || [];
+
+
+        const aj =
+            await supabaseClient
+                .from('ajustes_estoque')
+                .select('*');
+
+        if(aj.error)
+            throw aj.error;
+
+        ajustes =
+            aj.data || [];
+
+
+        status('✓ Sistema conectado ao Supabase');
+
+        atualizarDashboard();
+
+    }catch(e){
+
+        console.error(e);
+
+        status(
+            'Erro ao carregar o banco: ' +
+            (e.message || e),
+            true
+        );
+
+    }
+
 }
 
 
-/* ================================
+/* =========================================
    ESTOQUE
-================================ */
-
-function estoque(p){
-
-  const entradas =
-    Number(p.qtdInicial || 0);
-
-  const saidas =
-    db.vendas
-      .filter(v => v.produtoId === p.id)
-      .reduce(
-        (s,v) => s + Number(v.qtd || 0),
-        0
-      );
-
-  return Math.max(
-    0,
-    entradas - saidas
-  );
-}
-
-
-/* ================================
-   NAVEGAÇÃO
-================================ */
-
-function abrir(id){
-
-  document
-    .querySelectorAll('section,#home')
-    .forEach(x =>
-      x.classList.remove('show')
-    );
-
-  const tela =
-    document.getElementById(id);
-
-  if(tela){
-
-    tela.classList.add('show');
-
-  }
-
-  render();
-}
-
-
-/* ================================
-   SELECTS
-================================ */
-
-function selects(){
-
-  const vProd =
-    document.getElementById('vProd');
-
-  const fProd =
-    document.getElementById('fProd');
-
-  if(!vProd || !fProd)return;
-
-  const opts =
-    db.produtos
-      .map(p =>
-        `<option value="${p.id}">
-          ${escapeHtml(p.nome)}
-        </option>`
-      )
-      .join('');
-
-  vProd.innerHTML =
-    opts ||
-    '<option value="">Nenhum produto cadastrado</option>';
-
-  fProd.innerHTML =
-    opts ||
-    '<option value="">Nenhum produto cadastrado</option>';
-
-}
-
-
-/* ================================
-   ESCAPAR TEXTO
-================================ */
-
-function escapeHtml(text){
-
-  return String(text || '')
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#039;");
-
-}
-
-
-/* ================================
-   PREÇO PADRÃO
-================================ */
-
-function precoPadrao(tipo){
-
-  const selectId =
-    tipo === 'v'
-    ? 'vProd'
-    : 'fProd';
-
-  const precoId =
-    tipo === 'v'
-    ? 'vPreco'
-    : 'fPreco';
-
-  const select =
-    document.getElementById(selectId);
-
-  const campo =
-    document.getElementById(precoId);
-
-  if(!select || !campo)return;
-
-  const p =
-    pById(select.value);
-
-  if(p){
-
-    campo.value =
-      Number(p.repasse || 0).toFixed(2);
-
-  }
-
-}
-
-
-/* ================================
-   VENDER
-================================ */
-
-function vender(isFiado){
-
-  const prodId =
-    document.getElementById(
-      isFiado ? 'fProd' : 'vProd'
-    ).value;
-
-  const qtd =
-    Number(
-      document.getElementById(
-        isFiado ? 'fQtd' : 'vQtd'
-      ).value
-    );
-
-  const preco =
-    Number(
-      document.getElementById(
-        isFiado ? 'fPreco' : 'vPreco'
-      ).value
-    );
-
-  const p =
-    pById(prodId);
-
-  if(!p){
-
-    alert(
-      'Cadastre um produto primeiro.'
-    );
-
-    return;
-
-  }
-
-  if(qtd < 1){
-
-    alert(
-      'Informe uma quantidade válida.'
-    );
-
-    return;
-
-  }
-
-  if(preco <= 0){
-
-    alert(
-      'Informe um preço válido.'
-    );
-
-    return;
-
-  }
-
-  if(estoque(p) < qtd){
-
-    alert(
-      'Estoque insuficiente.'
-    );
-
-    return;
-
-  }
-
-
-  if(isFiado){
-
-    const cliente =
-      document
-        .getElementById('fCliente')
-        .value
-        .trim();
-
-    if(!cliente){
-
-      alert(
-        'Informe o nome do cliente.'
-      );
-
-      return;
+========================================= */
+
+function estoqueProduto(produtoId){
+
+    const entradas =
+        abastecimentos
+            .filter(
+                a => a.produto_id === produtoId
+            )
+            .reduce(
+                (s,a) =>
+                    s + numero(a.quantidade),
+                0
+            );
+
+
+    const saidas =
+        vendas
+            .filter(
+                v => v.produto_id === produtoId
+            )
+            .reduce(
+                (s,v) =>
+                    s + numero(v.quantidade),
+                0
+            );
+
+
+    const ajustesProduto =
+        ajustes
+            .filter(
+                a => a.produto_id === produtoId
+            );
+
+
+    let saldo =
+        entradas - saidas;
+
+
+    /*
+      Os ajustes representam a nova
+      quantidade física encontrada.
+    */
+
+    if(ajustesProduto.length){
+
+        const ultimo =
+            ajustesProduto
+                .sort(
+                    (a,b) =>
+                        new Date(b.criado_em || b.data) -
+                        new Date(a.criado_em || a.data)
+                )[0];
+
+        saldo =
+            numero(ultimo.quantidade_nova);
 
     }
 
-    const id = idNovo();
 
-    const venda = {
-
-      id:id,
-
-      produtoId:prodId,
-
-      qtd:qtd,
-
-      preco:preco,
-
-      total:qtd * preco,
-
-      data:hoje(),
-
-      fiado:true
-
-    };
-
-    db.vendas.push(venda);
-
-    db.fiados.push({
-
-      id:id,
-
-      cliente:cliente,
-
-      vendaId:id,
-
-      produtoId:prodId,
-
-      total:venda.total,
-
-      pago:0,
-
-      data:hoje()
-
-    });
-
-    document
-      .getElementById('fCliente')
-      .value = '';
-
-  }else{
-
-    db.vendas.push({
-
-      id:idNovo(),
-
-      produtoId:prodId,
-
-      qtd:qtd,
-
-      preco:preco,
-
-      total:qtd * preco,
-
-      data:hoje(),
-
-      fiado:false
-
-    });
-
-  }
-
-
-  save();
-
-  alert(
-    isFiado
-    ? 'Fiado registrado com sucesso!'
-    : 'Venda registrada com sucesso!'
-  );
-
-  abrir('home');
-
+    return saldo;
 }
 
 
-/* ================================
-   ABASTECER
-================================ */
-
-function abastecer(){
-
-  const nome =
-    document
-      .getElementById('pNome')
-      .value
-      .trim();
-
-  const custo =
-    Number(
-      document.getElementById('pCusto').value
-    );
-
-  const rep =
-    Number(
-      document.getElementById('pRepasse').value
-    );
-
-  const qtd =
-    Number(
-      document.getElementById('pQtd').value
-    );
-
-
-  if(!nome){
-
-    alert(
-      'Informe o nome do produto.'
-    );
-
-    return;
-
-  }
-
-  if(custo < 0){
-
-    alert(
-      'Custo inválido.'
-    );
-
-    return;
-
-  }
-
-  if(rep < 0){
-
-    alert(
-      'Preço de repasse inválido.'
-    );
-
-    return;
-
-  }
-
-  if(qtd < 1){
-
-    alert(
-      'Informe a quantidade recebida.'
-    );
-
-    return;
-
-  }
-
-
-  let p =
-    db.produtos.find(
-      x =>
-        x.nome.toLowerCase()
-        === nome.toLowerCase()
-    );
-
-
-  if(!p){
-
-    p = {
-
-      id:idNovo(),
-
-      nome:nome,
-
-      unidade:'unidade',
-
-      custo:custo,
-
-      repasse:rep,
-
-      qtdInicial:0,
-
-      ativo:true
-
-    };
-
-    db.produtos.push(p);
-
-  }
-
-
-  p.custo = custo;
-
-  p.repasse = rep;
-
-  p.qtdInicial =
-    Number(p.qtdInicial || 0) + qtd;
-
-
-  save();
-
-
-  alert(
-    'Abastecimento registrado!\n\n' +
-    'Produto: ' + nome +
-    '\nQuantidade: ' + qtd +
-    '\nCusto: ' + money(custo) +
-    '\nRepasse: ' + money(rep) +
-    '\nLucro por unidade: ' +
-    money(rep-custo)
-  );
-
-
-  document
-    .getElementById('pNome')
-    .value = '';
-
-  document
-    .getElementById('pQtd')
-    .value = '1';
-
-}
-
-
-/* ================================
-   RECEBER FIADO
-================================ */
-
-function receber(id){
-
-  const f =
-    db.fiados.find(
-      x => x.id === id
-    );
-
-  if(!f)return;
-
-
-  const aberto =
-    Math.max(
-      0,
-      Number(f.total || 0) -
-      Number(f.pago || 0)
-    );
-
-
-  if(aberto <= 0){
-
-    alert(
-      'Este fiado já está pago.'
-    );
-
-    return;
-
-  }
-
-
-  const resposta =
-    prompt(
-      'Valor recebido de ' +
-      f.cliente +
-      ':\n\n' +
-      'Em aberto: ' +
-      money(aberto),
-      aberto.toFixed(2)
-    );
-
-
-  if(resposta === null)return;
-
-
-  const val =
-    Number(
-      resposta
-        .replace(',','.')
-    );
-
-
-  if(!val || val <= 0){
-
-    alert(
-      'Informe um valor válido.'
-    );
-
-    return;
-
-  }
-
-
-  const recebido =
-    Math.min(
-      aberto,
-      val
-    );
-
-
-  f.pago =
-    Number(f.pago || 0) +
-    recebido;
-
-
-  db.recebimentos.push({
-
-    id:idNovo(),
-
-    fiadoId:id,
-
-    valor:recebido,
-
-    data:hoje()
-
-  });
-
-
-  save();
-
-  alert(
-    'Pagamento registrado!'
-  );
-
-}
-
-
-/* ================================
-   RENDER
-================================ */
-
-function render(){
-
-  selects();
-
-
-  const vh =
-    db.vendas.filter(
-      v => v.data === hoje()
-    );
-
-
-  const normal =
-    vh
-      .filter(v => !v.fiado)
-      .reduce(
-        (s,v) =>
-          s + Number(v.total || 0),
+function estoqueTotal(){
+
+    return produtos.reduce(
+        (total,p) =>
+            total + estoqueProduto(p.id),
         0
-      );
-
-
-  const qtd =
-    vh.reduce(
-      (s,v) =>
-        s + Number(v.qtd || 0),
-      0
     );
 
+}
 
-  const fiadoAberto =
-    db.fiados.reduce(
-      (s,f) =>
-        s +
-        Math.max(
-          0,
-          Number(f.total || 0) -
-          Number(f.pago || 0)
-        ),
-      0
-    );
 
+/* =========================================
+   DASHBOARD
+========================================= */
 
-  const estoqueTotal =
-    db.produtos.reduce(
-      (s,p) =>
-        s + estoque(p),
-      0
-    );
+function atualizarDashboard(){
 
+    const dataHoje =
+        hoje();
 
-  const hVendas =
-    document.getElementById('hVendas');
 
-  const hFiado =
-    document.getElementById('hFiado');
-
-  const hQtd =
-    document.getElementById('hQtd');
-
-  const hEstoque =
-    document.getElementById('hEstoque');
-
-
-  if(hVendas)
-    hVendas.textContent =
-      money(normal);
-
-  if(hFiado)
-    hFiado.textContent =
-      money(fiadoAberto);
-
-  if(hQtd)
-    hQtd.textContent =
-      qtd;
-
-  if(hEstoque)
-    hEstoque.textContent =
-      estoqueTotal;
-
-
-  const estoqueEl =
-    document.getElementById('estoque');
-
-
-  if(estoqueEl){
-
-    estoqueEl.innerHTML =
-      db.produtos.length
-
-      ?
-
-      db.produtos
-        .map(p => `
-
-          <div class="line">
-
-            <b>${escapeHtml(p.nome)}</b>
-
-            <br>
-
-            <span class="muted">
-              Estoque:
-            </span>
-
-            <b>
-              ${estoque(p)}
-            </b>
-            un.
-
-            <br>
-
-            Custo:
-            ${money(p.custo)}
-
-            • Repasse:
-            ${money(p.repasse)}
-
-            <br>
-
-            <span class="ok">
-              Lucro/un.: 
-              ${money(
-                Number(p.repasse || 0) -
-                Number(p.custo || 0)
-              )}
-            </span>
-
-          </div>
-
-        `)
-        .join('')
-
-      :
-
-      '<p class="empty">Nenhum produto cadastrado.</p>';
-
-  }
-
-
-  const fiadosEl =
-    document.getElementById('fiados');
-
-
-  if(fiadosEl){
-
-    const abertos =
-      db.fiados.filter(
-        f =>
-          Number(f.pago || 0) <
-          Number(f.total || 0)
-      );
-
-
-    fiadosEl.innerHTML =
-      abertos.length
-
-      ?
-
-      abertos
-        .map(f => `
-
-          <div class="line">
-
-            <b>
-              ${escapeHtml(f.cliente)}
-            </b>
-
-            <br>
-
-            ${money(
-              Number(f.total || 0) -
-              Number(f.pago || 0)
-            )}
-            em aberto
-
-            <br>
-
-            <button
-              class="btn green"
-              style="margin-top:8px"
-              onclick="receber('${f.id}')"
-            >
-              RECEBER
-            </button>
-
-          </div>
-
-        `)
-        .join('')
-
-      :
-
-      '<p class="empty">Nenhum fiado em aberto.</p>';
-
-  }
-
-
-  const produtosEl =
-    document.getElementById('produtos');
-
-
-  if(produtosEl){
-
-    produtosEl.innerHTML =
-      db.produtos.length
-
-      ?
-
-      db.produtos
-        .map(p => `
-
-          <div class="line">
-
-            <b>
-              ${escapeHtml(p.nome)}
-            </b>
-
-            <br>
-
-            Levado:
-            ${p.qtdInicial || 0}
-            un.
-
-            • Atual:
-            ${estoque(p)}
-            un.
-
-            <br>
-
-            Custo:
-            ${money(p.custo)}
-
-            • Repasse:
-            ${money(p.repasse)}
-
-            <br>
-
-            Lucro:
-            <span class="ok">
-              ${money(
-                Number(p.repasse || 0) -
-                Number(p.custo || 0)
-              )}
-              /un.
-            </span>
-
-          </div>
-
-        `)
-        .join('')
-
-      :
-
-      '<p class="empty">Nenhum produto cadastrado.</p>';
-
-  }
-
-
-  const rel =
-    document.getElementById('rel');
-
-
-  if(rel){
-
-    const fiadoHoje =
-      vh
-        .filter(v => v.fiado)
-        .reduce(
-          (s,v) =>
-            s + Number(v.total || 0),
-          0
+    const vendasHoje =
+        vendas.filter(
+            v => v.data === dataHoje
         );
 
 
-    rel.innerHTML = `
-
-      <p>
-        <b>Data:</b>
-        ${new Date().toLocaleDateString('pt-BR')}
-      </p>
-
-      <table>
-
-        <tr>
-          <th>Indicador</th>
-          <th>Valor</th>
-        </tr>
-
-        <tr>
-          <td>Unidades vendidas</td>
-          <td>${qtd}</td>
-        </tr>
-
-        <tr>
-          <td>Vendas normais</td>
-          <td>${money(normal)}</td>
-        </tr>
-
-        <tr>
-          <td>Fiado hoje</td>
-          <td>${money(fiadoHoje)}</td>
-        </tr>
-
-        <tr>
-          <td>Fiado em aberto</td>
-          <td>${money(fiadoAberto)}</td>
-        </tr>
-
-        <tr>
-          <td>Estoque atual</td>
-          <td>${estoqueTotal} unidades</td>
-        </tr>
-
-      </table>
-
-    `;
-
-  }
+    const normais =
+        vendasHoje
+            .filter(v => !v.fiado)
+            .reduce(
+                (s,v) =>
+                    s + numero(v.total),
+                0
+            );
 
 
-  if(db.produtos.length){
-
-    precoPadrao('v');
-    precoPadrao('f');
-
-  }
-
-}
+    const quantidade =
+        vendasHoje.reduce(
+            (s,v) =>
+                s + numero(v.quantidade),
+            0
+        );
 
 
-/* ================================
-   WHATSAPP
-================================ */
-
-function whatsapp(){
-
-  const vh =
-    db.vendas.filter(
-      v => v.data === hoje()
-    );
+    let fiadoAberto = 0;
 
 
-  const normal =
-    vh
-      .filter(v => !v.fiado)
-      .reduce(
-        (s,v) =>
-          s + Number(v.total || 0),
-        0
-      );
+    vendas
+        .filter(v => v.fiado)
+        .forEach(v => {
+
+            const pagos =
+                pagamentos
+                    .filter(
+                        p =>
+                        p.venda_id === v.id
+                    )
+                    .reduce(
+                        (s,p) =>
+                            s + numero(p.valor),
+                        0
+                    );
+
+            fiadoAberto +=
+                Math.max(
+                    0,
+                    numero(v.total)-pagos
+                );
+
+        });
 
 
-  const qtd =
-    vh.reduce(
-      (s,v) =>
-        s + Number(v.qtd || 0),
-      0
-    );
+    document.getElementById(
+        'hVendas'
+    ).textContent =
+        dinheiro(normais);
 
 
-  const fiado =
-    db.fiados.reduce(
-      (s,f) =>
-        s +
-        Math.max(
-          0,
-          Number(f.total || 0) -
-          Number(f.pago || 0)
-        ),
-      0
-    );
+    document.getElementById(
+        'hFiado'
+    ).textContent =
+        dinheiro(fiadoAberto);
 
 
-  const estoqueTotal =
-    db.produtos.reduce(
-      (s,p) =>
-        s + estoque(p),
-      0
-    );
+    document.getElementById(
+        'hQtd'
+    ).textContent =
+        quantidade;
 
 
-  const txt =
-`PRESTAÇÃO DE CONTAS - ${new Date().toLocaleDateString('pt-BR')}
-
-Unidades vendidas hoje: ${qtd}
-
-Vendas normais: ${money(normal)}
-
-Fiado em aberto: ${money(fiado)}
-
-Estoque: ${estoqueTotal} unidades`;
-
-
-  window.open(
-    'https://wa.me/?text=' +
-    encodeURIComponent(txt),
-    '_blank'
-  );
+    document.getElementById(
+        'hEstoque'
+    ).textContent =
+        estoqueTotal();
 
 }
 
 
-/* ================================
-   TESTE SUPABASE
-================================ */
+/* =========================================
+   MODAL
+========================================= */
 
-async function testarSupabase(){
+function abrirModal(tipo){
 
-  const status =
-    document.getElementById('status');
+    const bg =
+        document.getElementById('modalBg');
 
-
-  try{
-
-    const {error} =
-      await supabaseClient
-        .from('produtos')
-        .select('id')
-        .limit(1);
+    bg.classList.add('show');
 
 
-    if(error){
+    if(tipo === 'venda')
+        telaVenda();
 
-      console.warn(
-        'Supabase:',
-        error
-      );
+    if(tipo === 'fiado')
+        telaFiado();
 
-      status.className =
-        'status ok';
+    if(tipo === 'abastecer')
+        telaAbastecer();
 
-      status.textContent =
-        '✓ Sistema funcionando. Dados locais ativos.';
+    if(tipo === 'estoque')
+        telaEstoque();
 
-      return;
+    if(tipo === 'clientes')
+        telaClientes();
+
+    if(tipo === 'relatorio')
+        telaRelatorio();
+
+}
+
+
+function fecharModal(){
+
+    document
+        .getElementById('modalBg')
+        .classList.remove('show');
+
+}
+
+
+function fecharFora(e){
+
+    if(
+        e.target.id === 'modalBg'
+    ){
+
+        fecharModal();
+
+    }
+
+}
+
+
+function titulo(texto){
+
+    document
+        .getElementById('modalTitulo')
+        .textContent =
+        texto;
+
+}
+
+
+function conteudo(html){
+
+    document
+        .getElementById('modalConteudo')
+        .innerHTML =
+        html;
+
+}
+
+
+/* =========================================
+   VENDA
+========================================= */
+
+function telaVenda(){
+
+    titulo('💰 Registrar venda');
+
+
+    const options =
+        produtos
+            .map(
+                p =>
+                `<option value="${p.id}">
+                    ${p.nome}
+                </option>`
+            )
+            .join('');
+
+
+    conteudo(`
+
+        <label>Produto</label>
+
+        <select id="vProduto"
+                onchange="precoVenda()">
+
+            <option value="">
+                Selecione o produto
+            </option>
+
+            ${options}
+
+        </select>
+
+
+        <div class="row">
+
+            <div>
+
+                <label>Quantidade</label>
+
+                <input
+                    id="vQuantidade"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="1">
+
+            </div>
+
+
+            <div>
+
+                <label>Preço de venda</label>
+
+                <input
+                    id="vPreco"
+                    type="number"
+                    min="0"
+                    step="0.01">
+
+            </div>
+
+        </div>
+
+
+        <div id="vInfo"
+             class="info"
+             style="margin-top:15px">
+
+            Selecione um produto.
+
+        </div>
+
+
+        <button
+            class="btn green"
+            onclick="registrarVenda()">
+
+            💰 REGISTRAR VENDA
+
+        </button>
+
+    `);
+
+}
+
+
+function precoVenda(){
+
+    const id =
+        document.getElementById(
+            'vProduto'
+        ).value;
+
+
+    const p =
+        produtoPorId(id);
+
+
+    if(!p)
+        return;
+
+
+    document.getElementById(
+        'vPreco'
+    ).value =
+        numero(p.preco_repasse);
+
+
+    document.getElementById(
+        'vInfo'
+    ).innerHTML =
+
+        `Estoque disponível:
+         <strong>
+         ${estoqueProduto(p.id)}
+         </strong> un.<br>
+         Custo:
+         ${dinheiro(p.custo)}`;
+
+}
+
+
+async function registrarVenda(){
+
+    try{
+
+        const produtoId =
+            document.getElementById(
+                'vProduto'
+            ).value;
+
+
+        const quantidade =
+            numero(
+                document.getElementById(
+                    'vQuantidade'
+                ).value
+            );
+
+
+        const preco =
+            numero(
+                document.getElementById(
+                    'vPreco'
+                ).value
+            );
+
+
+        const p =
+            produtoPorId(produtoId);
+
+
+        if(!p)
+            return alert(
+                'Selecione o produto.'
+            );
+
+
+        if(quantidade <= 0)
+            return alert(
+                'Informe a quantidade.'
+            );
+
+
+        if(preco <= 0)
+            return alert(
+                'Informe o preço.'
+            );
+
+
+        const estoque =
+            estoqueProduto(produtoId);
+
+
+        if(estoque < quantidade){
+
+            return alert(
+                `Estoque insuficiente.
+Disponível: ${estoque} unidade(s).`
+            );
+
+        }
+
+
+        const total =
+            quantidade * preco;
+
+
+        const registro = {
+
+            id:idNovo(),
+
+            produto_id:produtoId,
+
+            quantidade:quantidade,
+
+            preco_unitario:preco,
+
+            total:total,
+
+            data:hoje(),
+
+            fiado:false
+
+        };
+
+
+        const {error} =
+            await supabaseClient
+                .from('vendas')
+                .insert(registro);
+
+
+        if(error)
+            throw error;
+
+
+        alert(
+            '✓ Venda registrada com sucesso!'
+        );
+
+
+        fecharModal();
+
+        await carregar();
+
+
+    }catch(e){
+
+        console.error(e);
+
+        alert(
+            'Erro ao registrar venda:\n\n' +
+            e.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FIADO
+========================================= */
+
+function telaFiado(){
+
+    titulo('📒 Registrar fiado');
+
+
+    const produtosOptions =
+        produtos
+            .map(
+                p =>
+                `<option value="${p.id}">
+                    ${p.nome}
+                </option>`
+            )
+            .join('');
+
+
+    const clientesOptions =
+        clientes
+            .map(
+                c =>
+                `<option value="${c.id}">
+                    ${c.nome}
+                </option>`
+            )
+            .join('');
+
+
+    conteudo(`
+
+        <label>Cliente</label>
+
+        <select id="fCliente">
+
+            <option value="">
+                Selecione o cliente
+            </option>
+
+            ${clientesOptions}
+
+        </select>
+
+
+        <button
+            class="btn white"
+            style="margin-top:8px"
+            onclick="novoClienteRapido()">
+
+            + CADASTRAR CLIENTE
+
+        </button>
+
+
+        <label>Produto</label>
+
+        <select id="fProduto"
+                onchange="precoFiado()">
+
+            <option value="">
+                Selecione o produto
+            </option>
+
+            ${produtosOptions}
+
+        </select>
+
+
+        <div class="row">
+
+            <div>
+
+                <label>Quantidade</label>
+
+                <input
+                    id="fQuantidade"
+                    type="number"
+                    min="1"
+                    value="1">
+
+            </div>
+
+
+            <div>
+
+                <label>Preço</label>
+
+                <input
+                    id="fPreco"
+                    type="number"
+                    min="0"
+                    step="0.01">
+
+            </div>
+
+        </div>
+
+
+        <div id="fInfo"
+             class="info"
+             style="margin-top:15px">
+
+            Informe os dados do fiado.
+
+        </div>
+
+
+        <button
+            class="btn yellow"
+            onclick="registrarFiado()">
+
+            📒 REGISTRAR FIADO
+
+        </button>
+
+    `);
+
+}
+
+
+function precoFiado(){
+
+    const id =
+        document.getElementById(
+            'fProduto'
+        ).value;
+
+
+    const p =
+        produtoPorId(id);
+
+
+    if(!p)
+        return;
+
+
+    document.getElementById(
+        'fPreco'
+    ).value =
+        numero(p.preco_repasse);
+
+
+    document.getElementById(
+        'fInfo'
+    ).innerHTML =
+
+        `Estoque disponível:
+        <strong>
+        ${estoqueProduto(p.id)}
+        </strong> un.`;
+
+}
+
+
+async function registrarFiado(){
+
+    try{
+
+        const clienteId =
+            document.getElementById(
+                'fCliente'
+            ).value;
+
+
+        const produtoId =
+            document.getElementById(
+                'fProduto'
+            ).value;
+
+
+        const quantidade =
+            numero(
+                document.getElementById(
+                    'fQuantidade'
+                ).value
+            );
+
+
+        const preco =
+            numero(
+                document.getElementById(
+                    'fPreco'
+                ).value
+            );
+
+
+        if(!clienteId)
+            return alert(
+                'Selecione o cliente.'
+            );
+
+
+        if(!produtoId)
+            return alert(
+                'Selecione o produto.'
+            );
+
+
+        if(quantidade <= 0)
+            return alert(
+                'Informe a quantidade.'
+            );
+
+
+        if(preco <= 0)
+            return alert(
+                'Informe o preço.'
+            );
+
+
+        const estoque =
+            estoqueProduto(produtoId);
+
+
+        if(estoque < quantidade){
+
+            return alert(
+                `Estoque insuficiente.
+Disponível: ${estoque} unidade(s).`
+            );
+
+        }
+
+
+        const total =
+            quantidade * preco;
+
+
+        const registro = {
+
+            id:idNovo(),
+
+            produto_id:produtoId,
+
+            quantidade:quantidade,
+
+            preco_unitario:preco,
+
+            total:total,
+
+            data:hoje(),
+
+            fiado:true,
+
+            cliente_id:clienteId
+
+        };
+
+
+        const {error} =
+            await supabaseClient
+                .from('vendas')
+                .insert(registro);
+
+
+        if(error)
+            throw error;
+
+
+        alert(
+            '✓ Fiado registrado com sucesso!'
+        );
+
+
+        fecharModal();
+
+        await carregar();
+
+
+    }catch(e){
+
+        console.error(e);
+
+        alert(
+            'Erro ao registrar o fiado:\n\n' +
+            e.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CLIENTE RÁPIDO
+========================================= */
+
+async function novoClienteRapido(){
+
+    const nome =
+        prompt(
+            'Nome do cliente:'
+        );
+
+
+    if(!nome)
+        return;
+
+
+    const telefone =
+        prompt(
+            'Telefone (opcional):'
+        ) || '';
+
+
+    try{
+
+        const registro = {
+
+            id:idNovo(),
+
+            nome:nome.trim(),
+
+            telefone:telefone.trim()
+
+        };
+
+
+        const {error} =
+            await supabaseClient
+                .from('clientes')
+                .insert(registro);
+
+
+        if(error)
+            throw error;
+
+
+        await carregar();
+
+        telaFiado();
+
+
+        setTimeout(()=>{
+
+            const select =
+                document.getElementById(
+                    'fCliente'
+                );
+
+            if(select){
+
+                const novo =
+                    clientes.find(
+                        c =>
+                        c.nome.toLowerCase() ===
+                        nome.trim().toLowerCase()
+                    );
+
+                if(novo)
+                    select.value =
+                        novo.id;
+
+            }
+
+        },100);
+
+
+    }catch(e){
+
+        alert(
+            'Erro ao cadastrar cliente:\n\n' +
+            e.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   ABASTECER
+========================================= */
+
+function telaAbastecer(){
+
+    titulo('📦 Abastecer estoque');
+
+
+    const options =
+        produtos
+            .map(
+                p =>
+                `<option value="${p.id}">
+                    ${p.nome}
+                </option>`
+            )
+            .join('');
+
+
+    conteudo(`
+
+        <label>Produto</label>
+
+        <select id="aProduto">
+
+            <option value="">
+                Selecione
+            </option>
+
+            ${options}
+
+        </select>
+
+
+        <div class="row">
+
+            <div>
+
+                <label>Quantidade</label>
+
+                <input
+                    id="aQuantidade"
+                    type="number"
+                    min="1"
+                    value="1">
+
+            </div>
+
+
+            <div>
+
+                <label>Custo unitário</label>
+
+                <input
+                    id="aCusto"
+                    type="number"
+                    min="0"
+                    step="0.01">
+
+            </div>
+
+        </div>
+
+
+        <label>Observação</label>
+
+        <input
+            id="aObs"
+            type="text"
+            placeholder="Opcional">
+
+
+        <button
+            class="btn dark"
+            style="margin-top:18px"
+            onclick="registrarAbastecimento()">
+
+            📦 SALVAR ABASTECIMENTO
+
+        </button>
+
+    `);
+
+}
+
+
+async function registrarAbastecimento(){
+
+    try{
+
+        const produtoId =
+            document.getElementById(
+                'aProduto'
+            ).value;
+
+
+        const quantidade =
+            numero(
+                document.getElementById(
+                    'aQuantidade'
+                ).value
+            );
+
+
+        const custo =
+            numero(
+                document.getElementById(
+                    'aCusto'
+                ).value
+            );
+
+
+        const obs =
+            document.getElementById(
+                'aObs'
+            ).value.trim();
+
+
+        if(!produtoId)
+            return alert(
+                'Selecione o produto.'
+            );
+
+
+        if(quantidade <= 0)
+            return alert(
+                'Informe a quantidade.'
+            );
+
+
+        const registro = {
+
+            id:idNovo(),
+
+            produto_id:produtoId,
+
+            quantidade:quantidade,
+
+            custo_unitario:custo,
+
+            data:hoje()
+
+        };
+
+
+        const {error} =
+            await supabaseClient
+                .from('abastecimentos')
+                .insert(registro);
+
+
+        if(error)
+            throw error;
+
+
+        const p =
+            produtoPorId(produtoId);
+
+
+        if(p){
+
+            await supabaseClient
+                .from('produtos')
+                .update({
+                    custo:custo
+                })
+                .eq('id',produtoId);
+
+        }
+
+
+        alert(
+            '✓ Abastecimento registrado!'
+        );
+
+
+        fecharModal();
+
+        await carregar();
+
+
+    }catch(e){
+
+        alert(
+            'Erro ao abastecer:\n\n' +
+            e.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   ESTOQUE
+========================================= */
+
+function telaEstoque(){
+
+    titulo('📊 Estoque');
+
+
+    if(!produtos.length){
+
+        conteudo(`
+            <div class="vazio">
+                Nenhum produto cadastrado.
+            </div>
+        `);
+
+        return;
 
     }
 
 
-    status.className =
-      'status ok';
+    const lista =
+        produtos
+            .map(p=>{
 
-    status.textContent =
-      '✓ Sistema conectado ao Supabase';
+                const qtd =
+                    estoqueProduto(p.id);
 
 
-  }catch(e){
+                return `
 
-    console.error(e);
+                <div class="item">
 
-    status.className =
-      'status ok';
+                    <div class="item-title">
+                        ${p.nome}
+                    </div>
 
-    status.textContent =
-      '✓ Sistema funcionando.';
+                    <div class="muted">
+                        Custo:
+                        ${dinheiro(p.custo)}
+                        • Repasse:
+                        ${dinheiro(p.preco_repasse)}
+                    </div>
 
-  }
+                    <div
+                        class="${qtd <= 0 ? 'perigo' : 'ok'}"
+                        style="margin-top:8px">
+
+                        Estoque:
+                        <strong>
+                        ${qtd}
+                        </strong>
+                        ${p.unidade || 'un.'}
+
+                    </div>
+
+                </div>
+
+                `;
+
+            })
+            .join('');
+
+
+    conteudo(`
+
+        <div class="info">
+
+            <span>Estoque total</span>
+
+            <br>
+
+            <strong>
+                ${estoqueTotal()}
+            </strong>
+            unidades
+
+        </div>
+
+
+        <button
+            class="btn blue"
+            onclick="telaAjustarEstoque()">
+
+            ⚙️ AJUSTAR ESTOQUE
+
+        </button>
+
+
+        <div
+            class="lista"
+            style="margin-top:15px">
+
+            ${lista}
+
+        </div>
+
+    `);
 
 }
 
 
-/* ================================
-   INICIALIZAÇÃO
-================================ */
+/* =========================================
+   AJUSTAR ESTOQUE
+========================================= */
 
-carregarLocal();
+function telaAjustarEstoque(){
 
-render();
+    titulo('⚙️ Ajustar estoque');
 
-testarSupabase();
+
+    const options =
+        produtos
+            .map(
+                p =>
+                `<option value="${p.id}">
+                    ${p.nome}
+                </option>`
+            )
+            .join('');
+
+
+    conteudo(`
+
+        <label>Produto</label>
+
+        <select id="ajProduto"
+                onchange="mostrarEstoqueAjuste()">
+
+            <option value="">
+                Selecione
+            </option>
+
+            ${options}
+
+        </select>
+
+
+        <div id="ajAtual"
+             class="info"
+             style="margin-top:15px">
+
+            Selecione o produto.
+
+        </div>
+
+
+        <label>Nova quantidade</label>
+
+        <input
+            id="ajQuantidade"
+            type="number"
+            min="0"
+            step="1"
+            value="0">
+
+
+        <label>Motivo do ajuste</label>
+
+        <input
+            id="ajMotivo"
+            type="text"
+            placeholder="Ex.: contagem física">
+
+
+        <button
+            class="btn blue"
+            style="margin-top:18px"
+            onclick="salvarAjuste()">
+
+            ✓ SALVAR AJUSTE
+
+        </button>
+
+
+        <button
+            class="btn white"
+            style="margin-top:10px"
+            onclick="telaEstoque()">
+
+            VOLTAR
+
+        </button>
+
+    `);
+
+}
+
+
+function mostrarEstoqueAjuste(){
+
+    const id =
+        document.getElementById(
+            'ajProduto'
+        ).value;
+
+
+    const p =
+        produtoPorId(id);
+
+
+    if(!p)
+        return;
+
+
+    const atual =
+        estoqueProduto(id);
+
+
+    document.getElementById(
+        'ajAtual'
+    ).innerHTML =
+
+        `Estoque atual:
+        <strong>${atual}</strong>
+        unidades`;
+
+
+
+    document.getElementById(
+        'ajQuantidade'
+    ).value =
+        atual;
+
+}
+
+
+async function salvarAjuste(){
+
+    try{
+
+        const produtoId =
+            document.getElementById(
+                'ajProduto'
+            ).value;
+
+
+        const nova =
+            numero(
+                document.getElementById(
+                    'ajQuantidade'
+                ).value
+            );
+
+
+        const motivo =
+            document.getElementById(
+                'ajMotivo'
+            ).value.trim();
+
+
+        if(!produtoId)
+            return alert(
+                'Selecione o produto.'
+            );
+
+
+        if(nova < 0)
+            return alert(
+                'Quantidade inválida.'
+            );
+
+
+        const anterior =
+            estoqueProduto(produtoId);
+
+
+        const registro = {
+
+            id:idNovo(),
+
+            produto_id:produtoId,
+
+            quantidade_anterior:anterior,
+
+            quantidade_nova:nova,
+
+            diferenca:nova-anterior,
+
+            motivo:motivo || 'Ajuste manual',
+
+            data:hoje()
+
+        };
+
+
+        const {error} =
+            await supabaseClient
+                .from('ajustes_estoque')
+                .insert(registro);
+
+
+        if(error)
+            throw error;
+
+
+        alert(
+            '✓ Estoque ajustado com sucesso!'
+        );
+
+
+        await carregar();
+
+        telaEstoque();
+
+
+    }catch(e){
+
+        alert(
+            'Erro ao ajustar estoque:\n\n' +
+            e.message
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CLIENTES
+========================================= */
+
+function telaClientes(){
+
+    titulo('👥 Clientes');
+
+
+    const lista =
+        clientes
+            .map(c=>{
+
+                const total =
+                    vendas
+                        .filter(
+                            v =>
+                            v.cliente_id === c.id &&
+                            v.fiado
+                        )
+                        .reduce(
+                            (s,v)=>{
+
+                                const pago =
+                                    pagamentos
+                                        .filter(
+                                            p =>
+                                            p.venda_id === v.id
+                                        )
+                                        .reduce(
+                                            (x,p) =>
+                                            x + numero(p.valor),
+                                            0
+                                        );
+
+                                return s +
+                                    Math.max(
+                                        0,
+                                        numero(v.total)-pago
+                                    );
+
+                            },
+                            0
+                        );
+
+
+                return `
+
+                <div class="item">
+
+                    <div class="item-title">
+                        ${c.nome}
+                    </div>
+
+                    <div class="muted">
+                        ${c.telefone || 'Sem telefone'}
+                    </div>
+
+                    <div style="margin-top:7px">
+
+                        Em aberto:
+                        <strong>
+                        ${dinheiro(total)}
+                        </strong>
+
+                    </div>
+
+                    ${
+                        total > 0
+                        ?
+                        `<button
+                            class="btn green"
+                            style="margin-top:10px;padding:11px"
+                            onclick="receberCliente('${c.id}')">
+
+                            💵 RECEBER
+
+                         </button>`
+                        :
+                        ''
+                    }
+
+                </div>
+
+                `;
+
+            })
+            .join('');
+
+
+    conteudo(`
+
+        <button
+            class="btn blue"
+            onclick="novoClienteRapido()">
+
+            + NOVO CLIENTE
+
+        </button>
+
+
+        <div
+            class="lista"
+            style="margin-top:15px">
+
+            ${
+                lista ||
+                '<div class="vazio">Nenhum cliente cadastrado.</div>'
+            }
+
+        </div>
+
+    `);
+
+}
+
+
+/* =========================================
+   RECEBER CLIENTE
+========================================= */
+
+async function receberCliente(clienteId){
+
+    const devedor =
+        vendas.filter(
+            v =>
+            v.cliente_id === clienteId &&
+            v.fiado
+        );
+
+
+    let aberto = 0;
+
+
+    devedor.forEach(v=>{
+
+        const pago =
+            pagamentos
+                .filter(
+                    p =>
+                    p.venda_id === v.id
+                )
+                .reduce(
+                    (s,p) =>
+                    s + numero(p.valor),
+                    0
+                );
+
+
+        aberto +=
+            Math.max(
+                0,
+                numero(v.total)-pago
+            );
+
+    });
+
+
+    if(aberto <= 0){
+
+        alert(
+            'Este cliente não possui débito em aberto.'
+        );
+
+        return;
+
+    }
+
+
+    const valor =
+        numero(
+            prompt(
+                `Valor recebido:\n${dinheiro(aberto)}`,
+                aberto.toFixed(2)
+            )
+        );
+
+
+    if(valor <= 0)
+        return;
+
+
+    if(valor > aberto){
+
+        alert(
+            'O valor recebido não pode ser maior que o débito.'
+        );
+
+        return;
+
+    }
+
+
+    /*
+      Distribui o pagamento nas vendas
+      mais antigas primeiro.
+    */
+
+    let restante =
+        valor;
+
+
+    for(const v of devedor){
+
+        if(restante <= 0)
+            break;
+
+
+        const pago =
+            pagamentos
+                .filter(
+                    p =>
+                    p.venda_id === v.id
+                )
+                .reduce(
+                    (s,p) =>
+                    s + numero(p.valor),
+                    0
+                );
+
+
+        const saldo =
+            Math.max(
+                0,
+                numero(v.total)-pago
+            );
+
+
+        if(saldo <= 0)
+            continue;
+
+
+        const pagamento =
+            Math.min(
+                saldo,
+                restante
+            );
+
+
+        const registro = {
+
+            id:idNovo(),
+
+            cliente_id:clienteId,
+
+            venda_id:v.id,
+
+            valor:pagamento,
+
+            data:hoje()
+
+        };
+
+
+        const {error} =
+            await supabaseClient
+                .from('pagamentos')
+                .insert(registro);
+
+
+        if(error)
+            throw error;
+
+
+        restante -=
+            pagamento;
+
+    }
+
+
+    alert(
+        '✓ Pagamento registrado!'
+    );
+
+
+    await carregar();
+
+    telaClientes();
+
+}
+
+
+/* =========================================
+   RELATÓRIO
+========================================= */
+
+function telaRelatorio(){
+
+    titulo('📋 Relatório');
+
+
+    const dataHoje =
+        hoje();
+
+
+    const vendasHoje =
+        vendas.filter(
+            v =>
+            v.data === dataHoje
+        );
+
+
+    const quantidade =
+        vendasHoje.reduce(
+            (s,v) =>
+            s + numero(v.quantidade),
+            0
+        );
+
+
+    const vendaNormal =
+        vendasHoje
+            .filter(v=>!v.fiado)
+            .reduce(
+                (s,v)=>
+                s + numero(v.total),
+                0
+            );
+
+
+    const vendaFiado =
+        vendasHoje
+            .filter(v=>v.fiado)
+            .reduce(
+                (s,v)=>
+                s + numero(v.total),
+                0
+            );
+
+
+    conteudo(`
+
+        <div class="info">
+
+            <strong>
+                ${new Date().toLocaleDateString('pt-BR')}
+            </strong>
+
+        </div>
+
+
+        <div class="lista">
+
+            <div class="item">
+
+                <div class="muted">
+                    Unidades vendidas
+                </div>
+
+                <div class="valor">
+                    ${quantidade}
+                </div>
+
+            </div>
+
+
+            <div class="item">
+
+                <div class="muted">
+                    Vendas normais
+                </div>
+
+                <div class="valor">
+                    ${dinheiro(vendaNormal)}
+                </div>
+
+            </div>
+
+
+            <div class="item">
+
+                <div class="muted">
+                    Fiado hoje
+                </div>
+
+                <div class="valor">
+                    ${dinheiro(vendaFiado)}
+                </div>
+
+            </div>
+
+
+            <div class="item">
+
+                <div class="muted">
+                    Fiado em aberto
+                </div>
+
+                <div class="valor">
+                    ${document.getElementById('hFiado').textContent}
+                </div>
+
+            </div>
+
+
+            <div class="item">
+
+                <div class="muted">
+                    Estoque atual
+                </div>
+
+                <div class="valor">
+                    ${estoqueTotal()} unidades
+                </div>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =========================================
+   INICIAR
+========================================= */
+
+carregar();
 
 </script>
 
