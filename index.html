@@ -68,9 +68,30 @@ footer{text-align:center;color:#7b8490;font-size:11px;padding:25px}
 <footer>Versão de teste. Nesta versão os dados ficam salvos neste aparelho.</footer>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const K='controle5l_v2';
-let db=JSON.parse(localStorage.getItem(K)||'{"produtos":[],"vendas":[],"fiados":[],"recebimentos":[]}');
+const SUPABASE_URL = 'https://gwpikrmgbtyjjgsfutup.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_zciAQZ9MscyBrb1kO7sYUA_ZmfP1ZmG';
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let db = {
+  produtos: [],
+  vendas: [],
+  fiados: [],
+  recebimentos: []
+};
+
+const hoje=()=>new Date().toISOString().slice(0,10);
+const money=v=>Number(v||0).toLocaleString('pt-BR',{
+  style:'currency',
+  currency:'BRL'
+});
+const pById=id=>db.produtos.find(p=>p.id===id);
 const hoje=()=>new Date().toISOString().slice(0,10);
 const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const pById=id=>db.produtos.find(p=>p.id===id);
