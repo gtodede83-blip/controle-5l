@@ -1,309 +1,344 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
 
-<title>Controle 5L</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
+
+<title>Controle 5L PRIME</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
 *{
- box-sizing:border-box;
+    box-sizing:border-box;
 }
 
 body{
- margin:0;
- background:#f3f5f8;
- color:#111827;
- font-family:Arial,sans-serif;
+    margin:0;
+    background:#f1f5f9;
+    color:#111827;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 header{
- background:#111827;
- color:white;
- padding:18px;
- position:sticky;
- top:0;
- z-index:10;
+    background:#111827;
+    color:white;
+    padding:18px;
+    position:sticky;
+    top:0;
+    z-index:50;
 }
 
 header h1{
- margin:0;
- font-size:24px;
+    margin:0;
+    font-size:23px;
 }
 
 header p{
- margin:5px 0 0;
- opacity:.75;
- font-size:13px;
+    margin:5px 0 0;
+    font-size:12px;
+    opacity:.75;
 }
 
 main{
- max-width:1000px;
- margin:auto;
- padding:15px;
+    max-width:1000px;
+    margin:auto;
+    padding:15px;
 }
 
 .status{
- padding:14px;
- border-radius:12px;
- margin-bottom:14px;
- font-weight:bold;
+    background:#dcfce7;
+    color:#15803d;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:12px;
+    font-weight:bold;
 }
 
-.ok{
- background:#dcfce7;
- color:#15803d;
+.status.erro{
+    background:#fee2e2;
+    color:#b91c1c;
 }
 
-.erro{
- background:#fee2e2;
- color:#b91c1c;
-}
-
-.grid{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:12px;
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
 }
 
 .card{
- background:white;
- padding:18px;
- border-radius:15px;
- box-shadow:0 2px 10px #0001;
+    background:white;
+    border-radius:15px;
+    padding:18px;
+    box-shadow:0 3px 15px #00000010;
 }
 
 .card span{
- display:block;
- color:#64748b;
- font-size:13px;
+    display:block;
+    color:#64748b;
+    font-size:13px;
 }
 
 .card strong{
- display:block;
- margin-top:6px;
- font-size:23px;
+    display:block;
+    font-size:25px;
+    margin-top:7px;
 }
 
-.botoes{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
- margin-top:14px;
+.menu{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:15px;
 }
 
 .btn{
- border:0;
- padding:17px;
- border-radius:13px;
- font-weight:bold;
- font-size:15px;
- cursor:pointer;
- width:100%;
+    border:0;
+    border-radius:13px;
+    padding:16px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    width:100%;
 }
 
-.btn:hover{
- opacity:.9;
+.btn:active{
+    transform:scale(.98);
 }
 
-.verde{
- background:#16a34a;
- color:white;
+.green{
+    background:#16a34a;
+    color:white;
 }
 
-.amarelo{
- background:#facc15;
- color:#111;
+.yellow{
+    background:#facc15;
+    color:#111827;
 }
 
-.azul{
- background:#2563eb;
- color:white;
+.blue{
+    background:#2563eb;
+    color:white;
 }
 
-.preto{
- background:#111827;
- color:white;
+.dark{
+    background:#111827;
+    color:white;
 }
 
-.branco{
- background:white;
- border:1px solid #d1d5db;
- color:#111;
+.red{
+    background:#dc2626;
+    color:white;
 }
 
-.vermelho{
- background:#dc2626;
- color:white;
-}
-
-section{
- display:none;
-}
-
-.flutuante{
- position:fixed;
- inset:0;
- background:#0008;
- z-index:100;
- padding:20px;
- overflow:auto;
+.white{
+    background:white;
+    color:#111827;
+    border:1px solid #cbd5e1;
 }
 
 .modal{
- background:white;
- max-width:700px;
- margin:30px auto;
- border-radius:18px;
- padding:20px;
- box-shadow:0 15px 50px #0006;
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#00000088;
+    z-index:100;
+    padding:15px;
+    overflow:auto;
 }
 
-.modal h2{
- margin-top:0;
+.modal.show{
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.fechar{
- float:right;
- width:auto;
- padding:9px 14px;
+.modal-box{
+    background:white;
+    width:100%;
+    max-width:850px;
+    max-height:95vh;
+    overflow:auto;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 20px 60px #00000040;
 }
 
-.campo{
- margin-bottom:13px;
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
 }
 
-.campo label{
- display:block;
- font-weight:bold;
- font-size:13px;
- margin-bottom:6px;
+.modal-header h2{
+    margin:0;
 }
 
-input,select{
- width:100%;
- padding:13px;
- border:1px solid #cbd5e1;
- border-radius:10px;
- font-size:15px;
- background:white;
+.close{
+    border:0;
+    background:#e5e7eb;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+label{
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+input,
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    font-size:15px;
+    background:white;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.produto-item{
+    border:1px solid #dbe3eb;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:10px;
+    background:#f8fafc;
+}
+
+.item-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr auto;
+    gap:8px;
+    align-items:end;
+}
+
+.lista{
+    margin-top:15px;
 }
 
 .linha{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
+    background:white;
+    border:1px solid #dbe3eb;
+    border-radius:13px;
+    padding:15px;
+    margin-bottom:10px;
 }
 
-.item{
- border:1px solid #e2e8f0;
- border-radius:12px;
- padding:13px;
- margin-bottom:10px;
- background:#fff;
+.linha-topo{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:center;
 }
 
-.item strong{
- font-size:16px;
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
 }
 
-.muted{
- color:#64748b;
- font-size:13px;
+.badge.green{
+    background:#dcfce7;
+    color:#166534;
 }
 
-.tag{
- display:inline-block;
- padding:5px 8px;
- border-radius:8px;
- font-size:11px;
- font-weight:bold;
- margin-top:6px;
+.badge.red{
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-.tag-ok{
- background:#dcfce7;
- color:#15803d;
+.badge.yellow{
+    background:#fef3c7;
+    color:#92400e;
 }
 
-.tag-inativo{
- background:#fee2e2;
- color:#b91c1c;
+.tabela{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
 }
 
-.tag-fiado{
- background:#fef3c7;
- color:#92400e;
+.tabela th,
+.tabela td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
 }
 
-.total-box{
- background:#111827;
- color:white;
- border-radius:12px;
- padding:15px;
- margin:15px 0;
+.resumo{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin:15px 0;
 }
 
-.total-box strong{
- font-size:24px;
+.resumo-box{
+    background:#f8fafc;
+    padding:13px;
+    border-radius:10px;
 }
 
-.produto-fiado{
- display:grid;
- grid-template-columns:1.5fr .5fr .7fr;
- gap:8px;
- align-items:end;
- margin-bottom:10px;
- padding:10px;
- border:1px solid #e5e7eb;
- border-radius:10px;
+.resumo-box span{
+    display:block;
+    color:#64748b;
+    font-size:12px;
 }
 
-table{
- width:100%;
- border-collapse:collapse;
- margin-top:10px;
-}
-
-th,td{
- text-align:left;
- padding:10px;
- border-bottom:1px solid #e5e7eb;
- font-size:13px;
-}
-
-th{
- background:#f8fafc;
+.resumo-box strong{
+    display:block;
+    font-size:18px;
+    margin-top:5px;
 }
 
 .vazio{
- text-align:center;
- color:#64748b;
- padding:25px;
+    text-align:center;
+    padding:30px;
+    color:#64748b;
 }
 
-@media(max-width:700px){
+@media(max-width:750px){
 
- .grid{
-  grid-template-columns:1fr 1fr;
- }
+    .dashboard{
+        grid-template-columns:repeat(2,1fr);
+    }
 
- .botoes{
-  grid-template-columns:1fr;
- }
+    .menu{
+        grid-template-columns:1fr;
+    }
 
- .linha{
-  grid-template-columns:1fr;
- }
+    .form-grid{
+        grid-template-columns:1fr;
+    }
 
- .produto-fiado{
-  grid-template-columns:1fr;
- }
+    .item-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .resumo{
+        grid-template-columns:1fr;
+    }
 
 }
 
@@ -315,76 +350,95 @@ th{
 
 <header>
 
-<h1>Controle 5L</h1>
+<h1>Controle 5L PRIME</h1>
+
 <p>Controle de produtos, estoque, vendas e fiados</p>
 
 </header>
 
 <main>
 
-<div id="status" class="status ok">
-⏳ Conectando ao Supabase...
+<div id="status"
+     class="status">
+
+Conectando ao Supabase...
+
 </div>
 
-<!-- DASHBOARD -->
 
-<div class="grid">
+<!-- =====================================================
+     PAINEL
+===================================================== -->
+
+<div class="dashboard">
 
 <div class="card">
 <span>Vendas hoje</span>
-<strong id="dashVendas">R$ 0,00</strong>
+<strong id="vendasHoje">R$ 0,00</strong>
 </div>
 
 <div class="card">
 <span>Fiado em aberto</span>
-<strong id="dashFiado">R$ 0,00</strong>
+<strong id="fiadoAberto">R$ 0,00</strong>
 </div>
 
 <div class="card">
 <span>Unidades vendidas hoje</span>
-<strong id="dashQtd">0</strong>
+<strong id="unidadesHoje">0</strong>
 </div>
 
 <div class="card">
 <span>Estoque atual</span>
-<strong id="dashEstoque">0</strong>
+<strong id="estoqueAtual">0</strong>
 </div>
 
 </div>
 
 
-<div class="botoes">
+<!-- =====================================================
+     MENU
+===================================================== -->
 
-<button class="btn verde" onclick="abrirModal('modalVenda')">
+<div class="menu">
+
+<button class="btn green"
+onclick="abrirModal('modalVenda')">
 💰 REGISTRAR VENDA
 </button>
 
-<button class="btn amarelo" onclick="abrirModal('modalFiado')">
-🧾 REGISTRAR FIADO
+<button class="btn yellow"
+onclick="abrirModal('modalFiado')">
+📒 REGISTRAR FIADO
 </button>
 
-<button class="btn preto" onclick="abrirModal('modalAbastecer')">
+<button class="btn dark"
+onclick="abrirModal('modalAbastecer')">
 📦 ABASTECER ESTOQUE
 </button>
 
-<button class="btn azul" onclick="abrirModal('modalAjuste')">
+<button class="btn blue"
+onclick="abrirModal('modalAjuste')">
 ⚙️ AJUSTAR ESTOQUE
 </button>
 
-<button class="btn branco" onclick="abrirModal('modalEstoque')">
+<button class="btn white"
+onclick="abrirModal('modalEstoque')">
 📊 VER ESTOQUE
 </button>
 
-<button class="btn branco" onclick="abrirModal('modalFiados')">
-🧾 VER FIADOS
+<button class="btn white"
+onclick="abrirModal('modalFiados')">
+📒 VER FIADOS
 </button>
 
-<button class="btn branco" onclick="abrirModal('modalHistorico')">
+<button class="btn white"
+onclick="abrirModal('modalHistorico')">
 📜 HISTÓRICO
 </button>
 
-<button class="btn branco" onclick="abrirModal('modalProdutos')">
-🏷️ PRODUTOS
+<button class="btn white"
+onclick="abrirModal('modalProdutos')">
+📦 PRODUTOS
 </button>
 
 </div>
@@ -393,270 +447,468 @@ th{
 
 
 <!-- =====================================================
- MODAL VENDA
+     MODAL VENDA
 ===================================================== -->
 
-<div id="modalVenda" class="flutuante">
+<div id="modalVenda" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalVenda')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>💰 Registrar Venda</h2>
+<h2>💰 Registrar venda</h2>
 
-<div class="campo">
-<label>Produto</label>
-<select id="vProduto"></select>
+<button class="close"
+onclick="fecharModais()">×</button>
+
 </div>
 
-<div class="linha">
+<div class="form-grid">
 
-<div class="campo">
+<div>
+<label>Produto</label>
+
+<select id="vProduto"
+onchange="preencherPrecoVenda()">
+</select>
+</div>
+
+<div>
 <label>Quantidade</label>
-<input id="vQuantidade" type="number" min="1" value="1">
+
+<input id="vQuantidade"
+type="number"
+min="1"
+value="1">
 </div>
 
-<div class="campo">
+<div>
 <label>Preço de venda</label>
-<input id="vPreco" type="number" min="0" step="0.01">
+
+<input id="vPreco"
+type="number"
+step="0.01"
+min="0">
 </div>
 
+<div>
+<label>Estoque disponível</label>
+
+<input id="vEstoque"
+readonly>
 </div>
 
-<button class="btn verde" onclick="registrarVenda()">
+<div class="full">
+
+<button class="btn green"
+onclick="registrarVenda()">
+
 REGISTRAR VENDA
+
 </button>
 
 </div>
+
+</div>
+
+</div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL FIADO
+     MODAL FIADO
 ===================================================== -->
 
-<div id="modalFiado" class="flutuante">
+<div id="modalFiado" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalFiado')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>🧾 Registrar Fiado</h2>
+<h2>📒 Registrar fiado</h2>
 
-<div class="campo">
-<label>Nome do cliente</label>
-<input id="fCliente" placeholder="Digite o nome do cliente">
-</div>
-
-<div id="listaProdutosFiado"></div>
-
-<button class="btn branco" onclick="adicionarProdutoFiado()">
-➕ ADICIONAR PRODUTO
-</button>
-
-<div class="total-box">
-
-<div>Total do fiado</div>
-
-<strong id="totalFiado">
-R$ 0,00
-</strong>
+<button class="close"
+onclick="fecharModais()">×</button>
 
 </div>
 
-<button class="btn amarelo" onclick="registrarFiado()">
+<div class="form-grid">
+
+<div>
+<label>Cliente</label>
+
+<input id="fCliente"
+placeholder="Nome do cliente">
+</div>
+
+<div>
+<label>Telefone</label>
+
+<input id="fTelefone"
+placeholder="Opcional">
+</div>
+
+</div>
+
+<hr>
+
+<h3>Produtos entregues</h3>
+
+<div id="itensFiado"></div>
+
+<button class="btn white"
+onclick="adicionarItemFiado()">
+
++ ADICIONAR OUTRO PRODUTO
+
+</button>
+
+<div class="resumo">
+
+<div class="resumo-box">
+<span>Total do fiado</span>
+<strong id="totalFiado">R$ 0,00</strong>
+</div>
+
+<div class="resumo-box">
+<span>Itens</span>
+<strong id="qtdItensFiado">0</strong>
+</div>
+
+<div class="resumo-box">
+<span>Status</span>
+<strong>EM ABERTO</strong>
+</div>
+
+</div>
+
+<button class="btn yellow"
+onclick="registrarFiado()">
+
 REGISTRAR FIADO
+
 </button>
 
 </div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL ABASTECER
+     MODAL ABASTECIMENTO
 ===================================================== -->
 
-<div id="modalAbastecer" class="flutuante">
+<div id="modalAbastecer" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalAbastecer')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>📦 Abastecer Estoque</h2>
+<h2>📦 Abastecer estoque</h2>
 
-<div class="campo">
+<button class="close"
+onclick="fecharModais()">×</button>
+
+</div>
+
+<div class="form-grid">
+
+<div>
 <label>Produto</label>
+
 <select id="aProduto"></select>
 </div>
 
-<div class="linha">
+<div>
+<label>Quantidade</label>
 
-<div class="campo">
-<label>Quantidade recebida</label>
-<input id="aQuantidade" type="number" min="1" value="1">
+<input id="aQuantidade"
+type="number"
+min="1"
+value="1">
 </div>
 
-<div class="campo">
+<div>
 <label>Custo unitário</label>
-<input id="aCusto" type="number" min="0" step="0.01">
+
+<input id="aCusto"
+type="number"
+step="0.01"
+min="0">
 </div>
 
+<div>
+<label>Data</label>
+
+<input id="aData"
+type="date">
 </div>
 
-<button class="btn preto" onclick="abastecerEstoque()">
+<div class="full">
+
+<button class="btn dark"
+onclick="registrarAbastecimento()">
+
 SALVAR ABASTECIMENTO
+
 </button>
 
 </div>
+
+</div>
+
+</div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL AJUSTE
+     MODAL AJUSTE
 ===================================================== -->
 
-<div id="modalAjuste" class="flutuante">
+<div id="modalAjuste" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalAjuste')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>⚙️ Ajustar Estoque</h2>
+<h2>⚙️ Ajustar estoque</h2>
 
-<p class="muted">
-Use esta opção para corrigir uma diferença encontrada na contagem física.
-</p>
+<button class="close"
+onclick="fecharModais()">×</button>
 
-<div class="campo">
+</div>
+
+<div class="form-grid">
+
+<div>
 <label>Produto</label>
-<select id="ajProduto"></select>
+
+<select id="ajProduto"
+onchange="mostrarEstoqueAjuste()">
+</select>
 </div>
 
-<div class="campo">
-<label>Quantidade do ajuste</label>
-<input id="ajQuantidade" type="number" value="0">
+<div>
+<label>Estoque atual</label>
+
+<input id="ajEstoque"
+readonly>
 </div>
 
-<p class="muted">
-Exemplo: estoque sistema 10 e estoque físico 13 → coloque +3.
-<br>
-Estoque sistema 10 e físico 8 → coloque -2.
-</p>
+<div>
+<label>Quantidade</label>
 
-<div class="campo">
+<input id="ajQuantidade"
+type="number"
+min="1"
+value="1">
+</div>
+
+<div>
+<label>Tipo</label>
+
+<select id="ajTipo">
+
+<option value="entrada">
+Entrada
+</option>
+
+<option value="saida">
+Saída
+</option>
+
+</select>
+
+</div>
+
+<div class="full">
+
 <label>Motivo</label>
-<input id="ajMotivo" placeholder="Ex.: Contagem física">
+
+<input id="ajMotivo"
+placeholder="Ex.: contagem, perda, correção...">
+
 </div>
 
-<button class="btn azul" onclick="ajustarEstoque()">
+<div class="full">
+
+<button class="btn blue"
+onclick="registrarAjuste()">
+
 SALVAR AJUSTE
+
 </button>
 
 </div>
+
+</div>
+
+</div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL ESTOQUE
+     MODAL ESTOQUE
 ===================================================== -->
 
-<div id="modalEstoque" class="flutuante">
+<div id="modalEstoque" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalEstoque')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>📊 Estoque Atual</h2>
+<h2>📊 Estoque atual</h2>
 
-<div id="listaEstoque"></div>
+<button class="close"
+onclick="fecharModais()">×</button>
 
 </div>
+
+<div id="listaEstoque"
+class="lista"></div>
+
+</div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL FIADOS
+     MODAL FIADOS
 ===================================================== -->
 
-<div id="modalFiados" class="flutuante">
+<div id="modalFiados" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalFiados')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>🧾 Fiados em Aberto</h2>
+<h2>📒 Fiados em aberto</h2>
+
+<button class="close"
+onclick="fecharModais()">×</button>
+
+</div>
 
 <div id="listaFiados"></div>
 
 </div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL HISTORICO
+     MODAL HISTÓRICO
 ===================================================== -->
 
-<div id="modalHistorico" class="flutuante">
+<div id="modalHistorico" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalHistorico')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>📜 Histórico de Movimentações</h2>
+<h2>📜 Histórico</h2>
 
-<button class="btn vermelho" onclick="limparHistorico()">
+<button class="close"
+onclick="fecharModais()">×</button>
+
+</div>
+
+<button class="btn red"
+onclick="limparHistorico()">
+
 🗑️ LIMPAR HISTÓRICO
+
 </button>
 
-<div id="listaHistorico"></div>
+<div id="listaHistorico"
+class="lista"></div>
 
 </div>
+
 </div>
 
 
 <!-- =====================================================
- MODAL PRODUTOS
+     MODAL PRODUTOS
 ===================================================== -->
 
-<div id="modalProdutos" class="flutuante">
+<div id="modalProdutos" class="modal">
 
-<div class="modal">
+<div class="modal-box">
 
-<button class="btn branco fechar" onclick="fecharModal('modalProdutos')">
-✕
-</button>
+<div class="modal-header">
 
-<h2>🏷️ Produtos</h2>
+<h2>📦 Produtos</h2>
 
-<button class="btn verde" onclick="novoProduto()">
-➕ NOVO PRODUTO
-</button>
-
-<div id="listaProdutos"></div>
+<button class="close"
+onclick="fecharModais()">×</button>
 
 </div>
+
+<div class="form-grid">
+
+<div>
+<label>Nome do produto</label>
+
+<input id="pNome">
+</div>
+
+<div>
+<label>Unidade</label>
+
+<input id="pUnidade"
+value="unidade">
+</div>
+
+<div>
+<label>Custo</label>
+
+<input id="pCusto"
+type="number"
+step="0.01"
+min="0">
+</div>
+
+<div>
+<label>Preço de repasse</label>
+
+<input id="pRepasse"
+type="number"
+step="0.01"
+min="0">
+</div>
+
+<div class="full">
+
+<button class="btn dark"
+onclick="cadastrarProduto()">
+
+CADASTRAR PRODUTO
+
+</button>
+
+</div>
+
+</div>
+
+<hr>
+
+<div id="listaProdutos"
+class="lista"></div>
+
+</div>
+
 </div>
 
 
 <script>
 
-/* =====================================================
- SUPABASE
-===================================================== */
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
 'https://gwpikrmgbtyjjgsfutup.supabase.co';
@@ -666,1924 +918,2260 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 
-/* =====================================================
- DADOS
-===================================================== */
+/* =========================================================
+   DADOS
+========================================================= */
 
 let produtos = [];
-let abastecimentos = [];
+let clientes = [];
 let vendas = [];
-let fiados = [];
-let pagamentos = [];
+let abastecimentos = [];
 let ajustes = [];
+let fiados = [];
+let fiadoItens = [];
+let pagamentos = [];
 
-let produtosFiado = [];
 
-
-/* =====================================================
- UTILIDADES
-===================================================== */
+/* =========================================================
+   FUNÇÕES BÁSICAS
+========================================================= */
 
 function hoje(){
 
- return new Date()
- .toISOString()
- .slice(0,10);
+    const d = new Date();
+
+    return d.toISOString().slice(0,10);
 
 }
 
 
-function dinheiro(valor){
+function money(valor){
 
- return Number(valor || 0)
- .toLocaleString(
-  'pt-BR',
-  {
-   style:'currency',
-   currency:'BRL'
-  }
- );
+    return Number(valor || 0)
+    .toLocaleString('pt-BR',{
+        style:'currency',
+        currency:'BRL'
+    });
 
 }
 
 
-function mostrarStatus(msg,erro=false){
+function escapar(texto){
 
- const el =
- document.getElementById('status');
-
- el.textContent =
- erro ? '❌ '+msg : '✓ '+msg;
-
- el.className =
- 'status '+(erro?'erro':'ok');
+    return String(texto || '')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
 
 }
 
 
 function abrirModal(id){
 
- document
- .getElementById(id)
- .style.display='block';
+    document
+    .querySelectorAll('.modal')
+    .forEach(m=>m.classList.remove('show'));
 
- if(id==='modalFiado'){
-  prepararFiado();
- }
+    document
+    .getElementById(id)
+    .classList.add('show');
 
- if(id==='modalEstoque'){
-  renderEstoque();
- }
-
- if(id==='modalFiados'){
-  renderFiados();
- }
-
- if(id==='modalHistorico'){
-  renderHistorico();
- }
-
- if(id==='modalProdutos'){
-  renderProdutos();
- }
+    atualizarModal(id);
 
 }
 
 
-function fecharModal(id){
+function fecharModais(){
 
- document
- .getElementById(id)
- .style.display='none';
+    document
+    .querySelectorAll('.modal')
+    .forEach(m=>m.classList.remove('show'));
 
 }
 
 
-/* =====================================================
- CARREGAR BANCO
-===================================================== */
+document
+.querySelectorAll('.modal')
+.forEach(modal=>{
+
+    modal.addEventListener('click',function(e){
+
+        if(e.target === modal){
+
+            fecharModais();
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   CARREGAR BANCO
+========================================================= */
 
 async function carregarBanco(){
 
- try{
+    try{
 
-  const p =
-  await supabaseClient
-  .from('produtos')
-  .select('*')
-  .order('nome');
+        const [
+            rProdutos,
+            rClientes,
+            rVendas,
+            rAbastecimentos,
+            rAjustes,
+            rFiados,
+            rItens,
+            rPagamentos
+        ] = await Promise.all([
 
-  if(p.error) throw p.error;
+            supabaseClient
+            .from('produtos')
+            .select('*')
+            .order('nome'),
 
-  produtos =
-  p.data || [];
+            supabaseClient
+            .from('clientes')
+            .select('*')
+            .order('nome'),
 
+            supabaseClient
+            .from('vendas')
+            .select('*')
+            .order('criado_em',{ascending:false}),
 
-  const a =
-  await supabaseClient
-  .from('abastecimentos')
-  .select('*')
-  .order('data',{ascending:false});
+            supabaseClient
+            .from('abastecimentos')
+            .select('*')
+            .order('criado_em',{ascending:false}),
 
-  if(a.error) throw a.error;
+            supabaseClient
+            .from('ajustes_estoque')
+            .select('*')
+            .order('criado_em',{ascending:false}),
 
-  abastecimentos =
-  a.data || [];
+            supabaseClient
+            .from('fiados')
+            .select('*')
+            .order('criado_em',{ascending:false}),
 
+            supabaseClient
+            .from('fiado_itens')
+            .select('*'),
 
-  const v =
-  await supabaseClient
-  .from('vendas')
-  .select('*')
-  .order('data',{ascending:false});
+            supabaseClient
+            .from('pagamentos')
+            .select('*')
+            .order('criado_em',{ascending:false})
 
-  if(v.error) throw v.error;
-
-  vendas =
-  v.data || [];
-
-
-  const f =
-  await supabaseClient
-  .from('fiados')
-  .select('*')
-  .order('data',{ascending:false});
-
-  if(f.error) throw f.error;
-
-  fiados =
-  f.data || [];
-
-
-  const pg =
-  await supabaseClient
-  .from('pagamentos')
-  .select('*')
-  .order('data',{ascending:false});
-
-  if(pg.error) throw pg.error;
-
-  pagamentos =
-  pg.data || [];
+        ]);
 
 
-  const aj =
-  await supabaseClient
-  .from('ajustes_estoque')
-  .select('*')
-  .order('data',{ascending:false});
-
-  if(aj.error) throw aj.error;
-
-  ajustes =
-  aj.data || [];
-
-
-  atualizarSelects();
-  atualizarDashboard();
-
-  mostrarStatus(
-   'Sistema conectado ao Supabase'
-  );
-
- }
- catch(e){
-
-  console.error(e);
-
-  mostrarStatus(
-   'Erro ao carregar banco: '+e.message,
-   true
-  );
-
- }
-
-}
+        const respostas = [
+            rProdutos,
+            rClientes,
+            rVendas,
+            rAbastecimentos,
+            rAjustes,
+            rFiados,
+            rItens,
+            rPagamentos
+        ];
 
 
-/* =====================================================
- SELECTS
-===================================================== */
-
-function atualizarSelects(){
-
- const ativos =
- produtos.filter(
-  p => p.ativo !== false
- );
-
- const opcoes =
- ativos.map(
-  p =>
-  `<option value="${p.id}">
-   ${p.nome}
-  </option>`
- ).join('');
+        const erro =
+        respostas.find(r=>r.error);
 
 
- const ids=[
-  'vProduto',
-  'aProduto',
-  'ajProduto'
- ];
+        if(erro){
 
- ids.forEach(id=>{
+            throw erro.error;
 
-  const el =
-  document.getElementById(id);
+        }
 
-  if(el){
-   el.innerHTML =
-   opcoes ||
-   '<option value="">Nenhum produto ativo</option>';
-  }
 
- });
+        produtos = rProdutos.data || [];
+        clientes = rClientes.data || [];
+        vendas = rVendas.data || [];
+        abastecimentos = rAbastecimentos.data || [];
+        ajustes = rAjustes.data || [];
+        fiados = rFiados.data || [];
+        fiadoItens = rItens.data || [];
+        pagamentos = rPagamentos.data || [];
+
+
+        document
+        .getElementById('status')
+        .className='status';
+
+        document
+        .getElementById('status')
+        .innerHTML='✓ Sistema conectado ao Supabase';
+
+
+        atualizarTudo();
+
+    }
+    catch(erro){
+
+        console.error(erro);
+
+        const status =
+        document.getElementById('status');
+
+        status.className='status erro';
+
+        status.innerHTML=
+        'Erro ao carregar o banco: '+
+        escapar(erro.message || erro);
+
+    }
 
 }
 
 
-/* =====================================================
- PRODUTO
-===================================================== */
-
-function produtoPorId(id){
-
- return produtos.find(
-  p=>p.id===id
- );
-
-}
-
-
-/* =====================================================
- ESTOQUE
-===================================================== */
+/* =========================================================
+   ESTOQUE
+========================================================= */
 
 function estoqueProduto(produtoId){
 
- const entradas =
- abastecimentos
- .filter(
-  a=>a.produto_id===produtoId
- )
- .reduce(
-  (total,a)=>
-  total+Number(a.quantidade||0),
-  0
- );
+    const entradas =
+    abastecimentos
+    .filter(x=>x.produto_id===produtoId)
+    .reduce((s,x)=>s+Number(x.quantidade||0),0);
 
 
- const saidas =
- vendas
- .filter(
-  v=>v.produto_id===produtoId
- )
- .reduce(
-  (total,v)=>
-  total+Number(v.quantidade||0),
-  0
- );
+    const ajustesEntrada =
+    ajustes
+    .filter(x=>
+        x.produto_id===produtoId &&
+        x.tipo==='entrada'
+    )
+    .reduce((s,x)=>s+Number(x.quantidade||0),0);
 
 
- const ajustesProduto =
- ajustes
- .filter(
-  a=>a.produto_id===produtoId
- )
- .reduce(
-  (total,a)=>
-  total+Number(a.quantidade||0),
-  0
- );
+    const ajustesSaida =
+    ajustes
+    .filter(x=>
+        x.produto_id===produtoId &&
+        x.tipo==='saida'
+    )
+    .reduce((s,x)=>s+Number(x.quantidade||0),0);
 
 
- return entradas-saidas+ajustesProduto;
-
-}
-
-
-function estoqueTotal(){
-
- return produtos
- .filter(
-  p=>p.ativo!==false
- )
- .reduce(
-  (total,p)=>
-  total+estoqueProduto(p.id),
-  0
- );
-
-}
+    const vendasNormais =
+    vendas
+    .filter(x=>
+        x.produto_id===produtoId
+    )
+    .reduce((s,x)=>s+Number(x.quantidade||0),0);
 
 
-/* =====================================================
- DASHBOARD
-===================================================== */
+    /*
+      FIADO TAMBÉM REPRESENTA PRODUTO ENTREGUE.
+      Portanto a quantidade entregue sai do estoque.
+    */
 
-function atualizarDashboard(){
-
- const hojeVendas =
- vendas.filter(
-  v=>v.data===hoje()
- );
-
-
- const vendasHoje =
- hojeVendas.reduce(
-  (total,v)=>
-  total+
-  Number(v.quantidade||0)*
-  Number(v.preco_venda||0),
-  0
- );
+    const vendasFiado =
+    fiadoItens
+    .filter(x=>
+        x.produto_id===produtoId
+    )
+    .reduce((s,x)=>s+Number(x.quantidade||0),0);
 
 
- const qtdHoje =
- hojeVendas.reduce(
-  (total,v)=>
-  total+
-  Number(v.quantidade||0),
-  0
- );
-
-
- const fiadoAberto =
- fiados.reduce(
-  (total,f)=>
-  total+
-  Math.max(
-   0,
-   Number(f.total||0)-
-   Number(f.pago||0)
-  ),
-  0
- );
-
-
- document.getElementById(
-  'dashVendas'
- ).textContent =
- dinheiro(vendasHoje);
-
-
- document.getElementById(
-  'dashFiado'
- ).textContent =
- dinheiro(fiadoAberto);
-
-
- document.getElementById(
-  'dashQtd'
- ).textContent =
- qtdHoje;
-
-
- document.getElementById(
-  'dashEstoque'
- ).textContent =
- estoqueTotal();
+    return Math.max(
+        0,
+        entradas
+        + ajustesEntrada
+        - ajustesSaida
+        - vendasNormais
+        - vendasFiado
+    );
 
 }
 
 
-/* =====================================================
- VENDA
-===================================================== */
+/* =========================================================
+   PRODUTO ATIVO
+========================================================= */
 
-document.addEventListener(
- 'change',
- function(e){
+function produtosAtivos(){
 
-  if(e.target.id==='vProduto'){
+    return produtos
+    .filter(p=>p.ativo !== false);
 
-   const p =
-   produtoPorId(
-    e.target.value
-   );
+}
 
-   if(p){
 
-    document.getElementById(
-     'vPreco'
-    ).value =
-    Number(p.preco_repasse||0);
+/* =========================================================
+   SELECTS
+========================================================= */
 
-   }
+function carregarSelects(){
 
-  }
+    const lista =
+    produtosAtivos();
 
- }
-);
 
+    const options =
+    lista.map(p=>
+        `<option value="${p.id}">
+            ${escapar(p.nome)}
+        </option>`
+    ).join('');
+
+
+    document.getElementById('vProduto').innerHTML =
+    options;
+
+    document.getElementById('aProduto').innerHTML =
+    options;
+
+    document.getElementById('ajProduto').innerHTML =
+    options;
+
+
+    preencherPrecoVenda();
+
+    mostrarEstoqueAjuste();
+
+}
+
+
+/* =========================================================
+   PREÇO DA VENDA
+========================================================= */
+
+function preencherPrecoVenda(){
+
+    const id =
+    document.getElementById('vProduto').value;
+
+    const produto =
+    produtos.find(p=>p.id===id);
+
+
+    if(!produto)return;
+
+
+    document.getElementById('vPreco').value =
+    Number(produto.preco_repasse || 0).toFixed(2);
+
+
+    document.getElementById('vEstoque').value =
+    estoqueProduto(id);
+
+}
+
+
+/* =========================================================
+   AJUSTE
+========================================================= */
+
+function mostrarEstoqueAjuste(){
+
+    const id =
+    document.getElementById('ajProduto').value;
+
+    if(!id)return;
+
+
+    document.getElementById('ajEstoque').value =
+    estoqueProduto(id);
+
+}
+
+
+/* =========================================================
+   VENDA NORMAL
+========================================================= */
 
 async function registrarVenda(){
 
- const produtoId =
- document.getElementById(
-  'vProduto'
- ).value;
+    const produtoId =
+    document.getElementById('vProduto').value;
 
- const quantidade =
- Number(
-  document.getElementById(
-   'vQuantidade'
-  ).value
- );
+    const quantidade =
+    Number(
+        document.getElementById('vQuantidade').value
+    );
 
- const preco =
- Number(
-  document.getElementById(
-   'vPreco'
-  ).value
- );
+    const preco =
+    Number(
+        document.getElementById('vPreco').value
+    );
 
 
- if(!produtoId||
-    quantidade<1||
-    preco<=0){
-
-  alert(
-   'Preencha produto, quantidade e preço.'
-  );
-
-  return;
-
- }
+    const produto =
+    produtos.find(p=>p.id===produtoId);
 
 
- const estoque =
- estoqueProduto(produtoId);
+    if(!produto){
+
+        alert('Selecione um produto.');
+
+        return;
+
+    }
 
 
- if(quantidade>estoque){
+    if(quantidade<1){
 
-  alert(
-   `Estoque insuficiente.\n\nDisponível: ${estoque} unidade(s).`
-  );
+        alert('Informe uma quantidade válida.');
 
-  return;
+        return;
 
- }
+    }
 
 
- const registro={
+    if(preco<=0){
 
-  id:crypto.randomUUID(),
+        alert('Informe o preço de venda.');
 
-  produto_id:produtoId,
+        return;
 
-  quantidade:quantidade,
-
-  preco_venda:preco,
-
-  data:hoje(),
-
-  tipo:'venda',
-
-  fiado_id:null
-
- };
+    }
 
 
- const {error} =
- await supabaseClient
- .from('vendas')
- .insert(registro);
+    const estoque =
+    estoqueProduto(produtoId);
 
 
- if(error){
+    if(quantidade>estoque){
 
-  alert(
-   'Erro ao registrar venda:\n'+
-   error.message
-  );
+        alert(
+            'Estoque insuficiente.\n\n'+
+            'Disponível: '+estoque
+        );
 
-  return;
+        return;
 
- }
-
-
- alert(
-  'Venda registrada com sucesso!'
- );
+    }
 
 
- document.getElementById(
-  'vQuantidade'
- ).value=1;
+    const total =
+    quantidade * preco;
 
 
- await carregarBanco();
+    const {error} =
+    await supabaseClient
+    .from('vendas')
+    .insert({
 
- fecharModal('modalVenda');
+        produto_id:produtoId,
+
+        quantidade:quantidade,
+
+        preco_venda:preco,
+
+        total:total,
+
+        tipo:'normal',
+
+        data:hoje()
+
+    });
+
+
+    if(error){
+
+        alert('Erro ao registrar venda:\n'+error.message);
+
+        return;
+
+    }
+
+
+    alert(
+        'Venda registrada!\n\n'+
+        produto.nome+
+        '\nQuantidade: '+quantidade+
+        '\nTotal: '+money(total)
+    );
+
+
+    await carregarBanco();
+
+    fecharModais();
 
 }
 
 
-/* =====================================================
- ABASTECIMENTO
-===================================================== */
+/* =========================================================
+   ABASTECIMENTO
+========================================================= */
 
-async function abastecerEstoque(){
+async function registrarAbastecimento(){
 
- const produtoId =
- document.getElementById(
-  'aProduto'
- ).value;
+    const produtoId =
+    document.getElementById('aProduto').value;
 
- const quantidade =
- Number(
-  document.getElementById(
-   'aQuantidade'
-  ).value
- );
+    const quantidade =
+    Number(
+        document.getElementById('aQuantidade').value
+    );
 
- const custo =
- Number(
-  document.getElementById(
-   'aCusto'
-  ).value
- );
+    const custo =
+    Number(
+        document.getElementById('aCusto').value
+    );
+
+    const data =
+    document.getElementById('aData').value ||
+    hoje();
 
 
- if(!produtoId||quantidade<1){
+    if(!produtoId){
 
-  alert(
-   'Informe produto e quantidade.'
-  );
+        alert('Selecione um produto.');
 
-  return;
+        return;
 
- }
+    }
 
 
- const registro={
+    if(quantidade<1){
 
-  id:crypto.randomUUID(),
+        alert('Informe a quantidade.');
 
-  produto_id:produtoId,
+        return;
 
-  quantidade:quantidade,
-
-  custo_unitario:custo,
-
-  data:hoje()
-
- };
+    }
 
 
- const {error} =
- await supabaseClient
- .from('abastecimentos')
- .insert(registro);
+    const produto =
+    produtos.find(p=>p.id===produtoId);
 
 
- if(error){
+    const {error} =
+    await supabaseClient
+    .from('abastecimentos')
+    .insert({
 
-  alert(
-   'Erro no abastecimento:\n'+
-   error.message
-  );
+        produto_id:produtoId,
 
-  return;
+        quantidade:quantidade,
 
- }
+        custo_unitario:custo,
 
+        data:data
 
- alert(
-  'Estoque abastecido com sucesso!'
- );
+    });
 
 
- await carregarBanco();
+    if(error){
 
- fecharModal('modalAbastecer');
+        alert(
+            'Erro no abastecimento:\n'+
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if(custo>=0){
+
+        await supabaseClient
+        .from('produtos')
+        .update({
+            custo:custo
+        })
+        .eq('id',produtoId);
+
+    }
+
+
+    alert(
+        'Estoque abastecido!\n\n'+
+        produto.nome+
+        '\nQuantidade: '+quantidade
+    );
+
+
+    await carregarBanco();
+
+    fecharModais();
 
 }
 
 
-/* =====================================================
- AJUSTE ESTOQUE
-===================================================== */
+/* =========================================================
+   AJUSTE DE ESTOQUE
+========================================================= */
 
-async function ajustarEstoque(){
+async function registrarAjuste(){
 
- const produtoId =
- document.getElementById(
-  'ajProduto'
- ).value;
+    const produtoId =
+    document.getElementById('ajProduto').value;
 
- const quantidade =
- Number(
-  document.getElementById(
-   'ajQuantidade'
-  ).value
- );
+    const quantidade =
+    Number(
+        document.getElementById('ajQuantidade').value
+    );
 
- const motivo =
- document.getElementById(
-  'ajMotivo'
- ).value.trim();
+    const tipo =
+    document.getElementById('ajTipo').value;
+
+    const motivo =
+    document.getElementById('ajMotivo').value.trim();
 
 
- if(!produtoId){
+    if(!produtoId){
 
-  alert('Selecione o produto.');
+        alert('Selecione o produto.');
 
-  return;
+        return;
 
- }
-
-
- if(quantidade===0){
-
-  alert(
-   'Digite uma quantidade diferente de zero.'
-  );
-
-  return;
-
- }
+    }
 
 
- const atual =
- estoqueProduto(produtoId);
+    if(quantidade<1){
 
- const novo =
- atual+quantidade;
+        alert('Informe a quantidade.');
 
+        return;
 
- if(novo<0){
-
-  alert(
-   `O ajuste deixaria o estoque negativo.\n\nEstoque atual: ${atual}`
-  );
-
-  return;
-
- }
+    }
 
 
- const {error} =
- await supabaseClient
- .from('ajustes_estoque')
- .insert({
+    if(tipo==='saida'){
 
-  id:crypto.randomUUID(),
-
-  produto_id:produtoId,
-
-  quantidade:quantidade,
-
-  motivo:motivo||'Ajuste manual',
-
-  data:hoje()
-
- });
+        const estoque =
+        estoqueProduto(produtoId);
 
 
- if(error){
+        if(quantidade>estoque){
 
-  alert(
-   'Erro no ajuste:\n'+
-   error.message
-  );
+            alert(
+                'Não é possível retirar mais que o estoque.\n\n'+
+                'Estoque atual: '+estoque
+            );
 
-  return;
+            return;
 
- }
+        }
 
-
- alert(
-  `Estoque ajustado!\n\nAntes: ${atual}\nDepois: ${novo}`
- );
+    }
 
 
- document.getElementById(
-  'ajQuantidade'
- ).value=0;
+    const {error} =
+    await supabaseClient
+    .from('ajustes_estoque')
+    .insert({
 
- document.getElementById(
-  'ajMotivo'
- ).value='';
+        produto_id:produtoId,
+
+        quantidade:quantidade,
+
+        tipo:tipo,
+
+        motivo:motivo || 'Ajuste manual',
+
+        data:hoje()
+
+    });
 
 
- await carregarBanco();
+    if(error){
 
- fecharModal('modalAjuste');
+        alert(
+            'Erro no ajuste:\n'+
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert('Ajuste de estoque registrado!');
+
+
+    await carregarBanco();
+
+    fecharModais();
 
 }
 
 
-/* =====================================================
- FIADO
-===================================================== */
+/* =========================================================
+   FIADO
+========================================================= */
 
-function prepararFiado(){
-
- const lista =
- document.getElementById(
-  'listaProdutosFiado'
- );
-
- lista.innerHTML='';
-
- produtosFiado=[];
-
- adicionarProdutoFiado();
-
-}
+let itensTempFiado=[];
 
 
-function adicionarProdutoFiado(){
+function adicionarItemFiado(){
 
- const ativos =
- produtos.filter(
-  p=>p.ativo!==false
- );
-
- if(!ativos.length){
-
-  alert(
-   'Não existem produtos ativos.'
-  );
-
-  return;
-
- }
+    const id =
+    crypto.randomUUID();
 
 
- const item={
-  produtoId:ativos[0].id,
-  quantidade:1,
-  preco:Number(
-   ativos[0].preco_repasse||0
-  )
- };
+    itensTempFiado.push({
+
+        id:id,
+
+        produtoId:'',
+
+        quantidade:1,
+
+        preco:0
+
+    });
 
 
- produtosFiado.push(item);
-
- renderProdutosFiado();
+    renderItensFiado();
 
 }
 
 
-function removerProdutoFiado(index){
+function removerItemFiado(id){
 
- produtosFiado.splice(
-  index,
-  1
- );
+    itensTempFiado =
+    itensTempFiado
+    .filter(x=>x.id!==id);
 
- renderProdutosFiado();
-
-}
-
-
-function alterarProdutoFiado(
- index,
- campo,
- valor
-){
-
- if(!produtosFiado[index]) return;
-
-
- if(campo==='produtoId'){
-
-  const p =
-  produtoPorId(valor);
-
-  produtosFiado[index].produtoId =
-  valor;
-
-  produtosFiado[index].preco =
-  Number(
-   p?.preco_repasse||0
-  );
-
- }
-
-
- if(campo==='quantidade'){
-
-  produtosFiado[index].quantidade =
-  Number(valor);
-
- }
-
-
- if(campo==='preco'){
-
-  produtosFiado[index].preco =
-  Number(valor);
-
- }
-
-
- renderProdutosFiado();
+    renderItensFiado();
 
 }
 
 
-function renderProdutosFiado(){
+function renderItensFiado(){
 
- const ativos =
- produtos.filter(
-  p=>p.ativo!==false
- );
+    const div =
+    document.getElementById('itensFiado');
 
 
- const container =
- document.getElementById(
-  'listaProdutosFiado'
- );
+    if(!itensTempFiado.length){
+
+        div.innerHTML=
+        '<div class="vazio">'+
+        'Adicione os produtos entregues no fiado.'+
+        '</div>';
+
+        atualizarTotalFiado();
+
+        return;
+
+    }
 
 
- container.innerHTML =
- produtosFiado.map(
-  (item,index)=>{
-
-   const opcoes =
-   ativos.map(
-    p=>
-    `<option
-      value="${p.id}"
-      ${p.id===item.produtoId?'selected':''}>
-      ${p.nome}
-    </option>`
-   ).join('');
+    const options =
+    produtosAtivos()
+    .map(p=>
+        `<option value="${p.id}">
+            ${escapar(p.nome)}
+        </option>`
+    ).join('');
 
 
-   return `
+    div.innerHTML =
+    itensTempFiado.map((item,index)=>{
 
-   <div class="produto-fiado">
+        return `
 
-    <div>
+        <div class="produto-item">
 
-     <label class="muted">
-      Produto
-     </label>
+        <div class="item-grid">
 
-     <select
-      onchange="alterarProdutoFiado(
-       ${index},
-       'produtoId',
-       this.value
-      )">
+        <div>
 
-      ${opcoes}
+        <label>Produto</label>
 
-     </select>
+        <select
+        onchange="alterarItemFiado('${item.id}','produtoId',this.value)">
 
-    </div>
+        <option value="">
+        Selecione
+        </option>
 
+        ${options}
 
-    <div>
+        </select>
 
-     <label class="muted">
-      Quantidade
-     </label>
+        </div>
 
-     <input
-      type="number"
-      min="1"
-      value="${item.quantidade}"
-      onchange="alterarProdutoFiado(
-       ${index},
-       'quantidade',
-       this.value
-      )">
+        <div>
 
-    </div>
+        <label>Quantidade</label>
 
+        <input
+        type="number"
+        min="1"
+        value="${item.quantidade}"
+        onchange="alterarItemFiado('${item.id}','quantidade',this.value)">
 
-    <div>
+        </div>
 
-     <label class="muted">
-      Preço
-     </label>
+        <div>
 
-     <input
-      type="number"
-      min="0"
-      step="0.01"
-      value="${item.preco}"
-      onchange="alterarProdutoFiado(
-       ${index},
-       'preco',
-       this.value
-      )">
+        <label>Preço</label>
 
-    </div>
+        <input
+        type="number"
+        min="0"
+        step="0.01"
+        value="${item.preco}"
+        onchange="alterarItemFiado('${item.id}','preco',this.value)">
 
+        </div>
 
-    <button
-     class="btn vermelho"
-     onclick="removerProdutoFiado(${index})">
+        <div>
 
-     REMOVER
+        <button
+        class="btn red"
+        onclick="removerItemFiado('${item.id}')">
 
-    </button>
+        X
 
-   </div>
+        </button>
 
-   `;
+        </div>
 
-  }
- ).join('');
+        </div>
+
+        </div>
+
+        `;
+
+    }).join('');
 
 
- atualizarTotalFiado();
+    itensTempFiado.forEach(item=>{
+
+        const selects =
+        div.querySelectorAll('select');
+
+        const idx =
+        itensTempFiado.indexOf(item);
+
+        if(selects[idx]){
+
+            selects[idx].value =
+            item.produtoId;
+
+        }
+
+    });
+
+
+    atualizarTotalFiado();
+
+}
+
+
+function alterarItemFiado(id,campo,valor){
+
+    const item =
+    itensTempFiado
+    .find(x=>x.id===id);
+
+
+    if(!item)return;
+
+
+    if(campo==='quantidade'){
+
+        item.quantidade =
+        Number(valor);
+
+    }
+
+    else if(campo==='preco'){
+
+        item.preco =
+        Number(valor);
+
+    }
+
+    else{
+
+        item[campo]=valor;
+
+
+        if(campo==='produtoId'){
+
+            const produto =
+            produtos.find(p=>p.id===valor);
+
+            if(produto){
+
+                item.preco =
+                Number(
+                    produto.preco_repasse || 0
+                );
+
+                renderItensFiado();
+
+            }
+
+        }
+
+    }
+
+
+    atualizarTotalFiado();
 
 }
 
 
 function atualizarTotalFiado(){
 
- const total =
- produtosFiado.reduce(
-  (s,item)=>
-  s+
-  Number(item.quantidade||0)*
-  Number(item.preco||0),
-  0
- );
+    const total =
+    itensTempFiado
+    .reduce(
+        (s,item)=>
+        s+
+        (
+            Number(item.quantidade||0) *
+            Number(item.preco||0)
+        ),
+        0
+    );
 
 
- document.getElementById(
-  'totalFiado'
- ).textContent =
- dinheiro(total);
+    document
+    .getElementById('totalFiado')
+    .textContent =
+    money(total);
+
+
+    document
+    .getElementById('qtdItensFiado')
+    .textContent =
+    itensTempFiado.length;
 
 }
 
+
+/* =========================================================
+   REGISTRAR FIADO
+========================================================= */
 
 async function registrarFiado(){
 
- const cliente =
- document.getElementById(
-  'fCliente'
- ).value.trim();
+    const cliente =
+    document
+    .getElementById('fCliente')
+    .value
+    .trim();
 
 
- if(!cliente){
+    const telefone =
+    document
+    .getElementById('fTelefone')
+    .value
+    .trim();
 
-  alert(
-   'Informe o nome do cliente.'
-  );
 
-  return;
+    if(!cliente){
 
- }
+        alert('Informe o nome do cliente.');
 
+        return;
 
- if(!produtosFiado.length){
+    }
 
-  alert(
-   'Adicione pelo menos um produto.'
-  );
 
-  return;
+    if(!itensTempFiado.length){
 
- }
+        alert(
+            'Adicione pelo menos um produto.'
+        );
 
+        return;
 
- for(const item of produtosFiado){
+    }
 
-  if(item.quantidade<1){
 
-   alert(
-    'A quantidade deve ser maior que zero.'
-   );
+    for(const item of itensTempFiado){
 
-   return;
+        if(!item.produtoId){
 
-  }
+            alert(
+                'Selecione todos os produtos.'
+            );
 
+            return;
 
-  if(item.preco<=0){
+        }
 
-   alert(
-    'Existe produto com preço inválido.'
-   );
 
-   return;
+        if(Number(item.quantidade)<1){
 
-  }
+            alert(
+                'A quantidade deve ser maior que zero.'
+            );
 
+            return;
 
-  const estoque =
-  estoqueProduto(
-   item.produtoId
-  );
+        }
 
 
-  if(item.quantidade>estoque){
+        if(Number(item.preco)<=0){
 
-   const p =
-   produtoPorId(
-    item.produtoId
-   );
+            alert(
+                'Informe o preço de todos os produtos.'
+            );
 
-   alert(
-    `Estoque insuficiente para ${p?.nome}.\n\nDisponível: ${estoque}`
-   );
+            return;
 
-   return;
+        }
 
-  }
 
- }
+        const estoque =
+        estoqueProduto(item.produtoId);
 
 
- const total =
- produtosFiado.reduce(
-  (s,item)=>
-  s+
-  Number(item.quantidade)*
-  Number(item.preco),
-  0
- );
+        if(item.quantidade>estoque){
 
+            const produto =
+            produtos.find(
+                p=>p.id===item.produtoId
+            );
 
- const fiadoId =
- crypto.randomUUID();
 
+            alert(
+                'Estoque insuficiente para '+produto.nome+
+                '.\n\nDisponível: '+estoque+
+                '\nSolicitado: '+item.quantidade
+            );
 
- const {error:erroFiado} =
- await supabaseClient
- .from('fiados')
- .insert({
+            return;
 
-  id:fiadoId,
+        }
 
-  cliente:cliente,
+    }
 
-  total:total,
 
-  pago:0,
+    let clienteBanco =
+    clientes.find(
+        c=>
+        c.nome.toLowerCase()===
+        cliente.toLowerCase()
+    );
 
-  data:hoje()
 
- });
+    if(!clienteBanco){
 
+        const resposta =
+        await supabaseClient
+        .from('clientes')
+        .insert({
 
- if(erroFiado){
+            nome:cliente,
 
-  alert(
-   'Erro ao registrar o fiado:\n'+
-   erroFiado.message
-  );
+            telefone:telefone || null
 
-  return;
+        })
+        .select()
+        .single();
 
- }
 
+        if(resposta.error){
 
- for(const item of produtosFiado){
+            alert(
+                'Erro ao cadastrar cliente:\n'+
+                resposta.error.message
+            );
 
-  const {error} =
-  await supabaseClient
-  .from('vendas')
-  .insert({
+            return;
 
-   id:crypto.randomUUID(),
+        }
 
-   produto_id:item.produtoId,
 
-   quantidade:item.quantidade,
+        clienteBanco =
+        resposta.data;
 
-   preco_venda:item.preco,
+    }
 
-   data:hoje(),
 
-   tipo:'fiado',
+    const total =
+    itensTempFiado
+    .reduce(
+        (s,item)=>
+        s+
+        item.quantidade*
+        item.preco,
+        0
+    );
 
-   fiado_id:fiadoId
 
-  });
+    const respostaFiado =
+    await supabaseClient
+    .from('fiados')
+    .insert({
 
+        cliente_id:clienteBanco.id,
 
-  if(error){
+        cliente_nome:clienteBanco.nome,
 
-   alert(
-    'Erro ao registrar produto do fiado:\n'+
-    error.message
-   );
+        total:total,
 
-   return;
+        pago:0,
 
-  }
+        data:hoje()
 
- }
+    })
+    .select()
+    .single();
 
 
- alert(
-  `Fiado registrado!\n\nCliente: ${cliente}\nTotal: ${dinheiro(total)}`
- );
+    if(respostaFiado.error){
 
+        alert(
+            'Erro ao registrar fiado:\n'+
+            respostaFiado.error.message
+        );
 
- document.getElementById(
-  'fCliente'
- ).value='';
+        return;
 
+    }
 
- produtosFiado=[];
 
- await carregarBanco();
+    const fiado =
+    respostaFiado.data;
 
- fecharModal('modalFiado');
+
+    const itensBanco =
+    itensTempFiado.map(item=>{
+
+        const produto =
+        produtos.find(
+            p=>p.id===item.produtoId
+        );
+
+
+        return {
+
+            fiado_id:fiado.id,
+
+            produto_id:item.produtoId,
+
+            produto_nome:produto.nome,
+
+            quantidade:item.quantidade,
+
+            preco_unitario:item.preco,
+
+            total:
+            item.quantidade*
+            item.preco
+
+        };
+
+    });
+
+
+    const respostaItens =
+    await supabaseClient
+    .from('fiado_itens')
+    .insert(itensBanco);
+
+
+    if(respostaItens.error){
+
+        await supabaseClient
+        .from('fiados')
+        .delete()
+        .eq('id',fiado.id);
+
+
+        alert(
+            'Erro ao salvar itens do fiado:\n'+
+            respostaItens.error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        'Fiado registrado com sucesso!\n\n'+
+        'Cliente: '+cliente+
+        '\nTotal: '+money(total)
+    );
+
+
+    itensTempFiado=[];
+
+    document.getElementById('fCliente').value='';
+    document.getElementById('fTelefone').value='';
+
+    await carregarBanco();
+
+    fecharModais();
 
 }
 
 
-/* =====================================================
- ESTOQUE
-===================================================== */
-
-function renderEstoque(){
-
- const container =
- document.getElementById(
-  'listaEstoque'
- );
-
-
- const ativos =
- produtos.filter(
-  p=>p.ativo!==false
- );
-
-
- if(!ativos.length){
-
-  container.innerHTML =
-  '<div class="vazio">Nenhum produto ativo.</div>';
-
-  return;
-
- }
-
-
- container.innerHTML =
- ativos.map(p=>{
-
-  const qtd =
-  estoqueProduto(p.id);
-
-
-  return `
-
-  <div class="item">
-
-   <strong>${p.nome}</strong>
-
-   <div class="muted">
-    Custo: ${dinheiro(p.custo)}
-    • Repasse: ${dinheiro(p.preco_repasse)}
-   </div>
-
-   <div style="margin-top:8px">
-
-    Estoque atual:
-    <strong>${qtd} ${p.unidade||'un.'}</strong>
-
-   </div>
-
-  </div>
-
-  `;
-
- }).join('');
-
-}
-
-
-/* =====================================================
- FIADOS
-===================================================== */
-
-function saldoFiado(f){
-
- return Math.max(
-  0,
-  Number(f.total||0)-
-  Number(f.pago||0)
- );
-
-}
-
-
-function renderFiados(){
-
- const container =
- document.getElementById(
-  'listaFiados'
- );
-
-
- const abertos =
- fiados.filter(
-  f=>saldoFiado(f)>0
- );
-
-
- if(!abertos.length){
-
-  container.innerHTML =
-  '<div class="vazio">Nenhum fiado em aberto.</div>';
-
-  return;
-
- }
-
-
- container.innerHTML =
- abertos.map(f=>`
-
- <div class="item">
-
-  <strong>${f.cliente}</strong>
-
-  <div>
-   Total: ${dinheiro(f.total)}
-  </div>
-
-  <div>
-   Pago: ${dinheiro(f.pago)}
-  </div>
-
-  <div style="margin-top:6px">
-
-   <strong>
-    Aberto: ${dinheiro(saldoFiado(f))}
-   </strong>
-
-  </div>
-
-  <button
-   class="btn verde"
-   style="margin-top:10px"
-   onclick="receberFiado('${f.id}')">
-
-   💵 RECEBER
-
-  </button>
-
- </div>
-
- `).join('');
-
-}
-
+/* =========================================================
+   RECEBER FIADO
+========================================================= */
 
 async function receberFiado(id){
 
- const f =
- fiados.find(
-  x=>x.id===id
- );
+    const fiado =
+    fiados.find(x=>x.id===id);
 
 
- if(!f) return;
+    if(!fiado)return;
 
 
- const aberto =
- saldoFiado(f);
+    const aberto =
+    Math.max(
+        0,
+        Number(fiado.total||0)-
+        Number(fiado.pago||0)
+    );
 
 
- const valor =
- Number(
-  prompt(
-   `Cliente: ${f.cliente}\nValor em aberto: ${dinheiro(aberto)}\n\nDigite o valor recebido:`,
-   aberto.toFixed(2)
-  )
- );
+    if(aberto<=0){
+
+        alert('Este fiado já está quitado.');
+
+        return;
+
+    }
 
 
- if(!valor||
-    valor<=0){
-
-  return;
-
- }
-
-
- if(valor>aberto){
-
-  alert(
-   'O valor recebido não pode ser maior que o saldo.'
-  );
-
-  return;
-
- }
+    const valorTexto =
+    prompt(
+        'Cliente: '+fiado.cliente_nome+
+        '\nEm aberto: '+money(aberto)+
+        '\n\nDigite o valor recebido:',
+        aberto.toFixed(2)
+    );
 
 
- const novoPago =
- Number(f.pago||0)+valor;
+    if(valorTexto===null)return;
 
 
- const {error:erroUpdate} =
- await supabaseClient
- .from('fiados')
- .update({
-  pago:novoPago
- })
- .eq('id',id);
+    const valor =
+    Number(
+        valorTexto.replace(',','.')
+    );
 
 
- if(erroUpdate){
+    if(valor<=0){
 
-  alert(
-   'Erro ao atualizar fiado:\n'+
-   erroUpdate.message
-  );
+        alert('Valor inválido.');
 
-  return;
+        return;
 
- }
+    }
 
 
- const {error:erroPg} =
- await supabaseClient
- .from('pagamentos')
- .insert({
+    if(valor>aberto){
 
-  id:crypto.randomUUID(),
+        alert(
+            'O valor recebido não pode ser maior que o saldo.'
+        );
 
-  fiado_id:id,
+        return;
 
-  valor:valor,
-
-  data:hoje()
-
- });
+    }
 
 
- if(erroPg){
-
-  alert(
-   'Pagamento registrado, mas houve erro no histórico:\n'+
-   erroPg.message
-  );
-
- }
+    const novoPago =
+    Number(fiado.pago||0)+valor;
 
 
- alert(
-  `Recebimento registrado: ${dinheiro(valor)}`
- );
+    const pagamento =
+    await supabaseClient
+    .from('pagamentos')
+    .insert({
+
+        fiado_id:id,
+
+        valor:valor,
+
+        data:hoje()
+
+    });
 
 
- await carregarBanco();
+    if(pagamento.error){
 
- renderFiados();
+        alert(
+            'Erro ao registrar pagamento:\n'+
+            pagamento.error.message
+        );
+
+        return;
+
+    }
+
+
+    const atualizacao =
+    await supabaseClient
+    .from('fiados')
+    .update({
+
+        pago:novoPago
+
+    })
+    .eq('id',id);
+
+
+    if(atualizacao.error){
+
+        alert(
+            'Erro ao atualizar fiado:\n'+
+            atualizacao.error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        'Pagamento registrado!\n\n'+
+        'Recebido: '+money(valor)+
+        '\nSaldo: '+money(aberto-valor)
+    );
+
+
+    await carregarBanco();
 
 }
 
 
-/* =====================================================
- HISTÓRICO
-===================================================== */
+/* =========================================================
+   PRODUTOS
+========================================================= */
 
-function renderHistorico(){
+async function cadastrarProduto(){
 
- const container =
- document.getElementById(
-  'listaHistorico'
- );
-
-
- const movimentos=[];
+    const nome =
+    document
+    .getElementById('pNome')
+    .value
+    .trim();
 
 
- abastecimentos.forEach(a=>{
-
-  const p =
-  produtoPorId(a.produto_id);
-
-  movimentos.push({
-
-   data:a.data,
-
-   tipo:'ABASTECIMENTO',
-
-   descricao:
-   `${p?.nome||'Produto'} +${a.quantidade} un.`
-
-  });
-
- });
+    const unidade =
+    document
+    .getElementById('pUnidade')
+    .value
+    .trim() ||
+    'unidade';
 
 
- vendas.forEach(v=>{
-
-  const p =
-  produtoPorId(v.produto_id);
-
-  const tipo =
-  v.tipo==='fiado'
-  ?'FIADO'
-  :'VENDA';
-
-  movimentos.push({
-
-   data:v.data,
-
-   tipo:tipo,
-
-   descricao:
-   `${p?.nome||'Produto'} -${v.quantidade} un. - ${dinheiro(Number(v.quantidade)*Number(v.preco_venda))}`
-
-  });
-
- });
+    const custo =
+    Number(
+        document.getElementById('pCusto').value
+    );
 
 
- ajustes.forEach(a=>{
-
-  const p =
-  produtoPorId(a.produto_id);
-
-  movimentos.push({
-
-   data:a.data,
-
-   tipo:'AJUSTE',
-
-   descricao:
-   `${p?.nome||'Produto'} ${a.quantidade>0?'+':''}${a.quantidade} un. - ${a.motivo||''}`
-
-  });
-
- });
+    const repasse =
+    Number(
+        document.getElementById('pRepasse').value
+    );
 
 
- pagamentos.forEach(p=>{
+    if(!nome){
 
-  const f =
-  fiados.find(
-   x=>x.id===p.fiado_id
-  );
+        alert('Informe o nome do produto.');
 
-  movimentos.push({
+        return;
 
-   data:p.data,
-
-   tipo:'RECEBIMENTO',
-
-   descricao:
-   `${f?.cliente||'Cliente'} +${dinheiro(p.valor)}`
-
-  });
-
- });
+    }
 
 
- movimentos.sort(
-  (a,b)=>
-  String(b.data)
-  .localeCompare(
-   String(a.data)
-  )
- );
+    const existente =
+    produtos.find(
+        p=>
+        p.nome.toLowerCase()===
+        nome.toLowerCase()
+    );
 
 
- if(!movimentos.length){
+    if(existente){
 
-  container.innerHTML =
-  '<div class="vazio">Nenhuma movimentação registrada.</div>';
+        const {error} =
+        await supabaseClient
+        .from('produtos')
+        .update({
 
-  return;
+            unidade:unidade,
 
- }
+            custo:custo,
+
+            preco_repasse:repasse,
+
+            ativo:true
+
+        })
+        .eq('id',existente.id);
 
 
- container.innerHTML =
- movimentos.map(m=>`
+        if(error){
 
- <div class="item">
+            alert(
+                'Erro ao atualizar produto:\n'+
+                error.message
+            );
 
-  <strong>${m.tipo}</strong>
+            return;
 
-  <div>
-   ${m.descricao}
-  </div>
+        }
 
-  <div class="muted">
-   ${new Date(
-    m.data+'T12:00:00'
-   ).toLocaleDateString('pt-BR')}
-  </div>
 
- </div>
+        alert('Produto atualizado e ativado!');
 
- `).join('');
+    }
+    else{
+
+        const {error} =
+        await supabaseClient
+        .from('produtos')
+        .insert({
+
+            nome:nome,
+
+            unidade:unidade,
+
+            custo:custo,
+
+            preco_repasse:repasse,
+
+            ativo:true
+
+        });
+
+
+        if(error){
+
+            alert(
+                'Erro ao cadastrar produto:\n'+
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        alert('Produto cadastrado!');
+
+    }
+
+
+    document.getElementById('pNome').value='';
+    document.getElementById('pCusto').value='';
+    document.getElementById('pRepasse').value='';
+
+    await carregarBanco();
 
 }
 
 
-/* =====================================================
- LIMPAR HISTÓRICO
-===================================================== */
-
-async function limparHistorico(){
-
- const confirma =
- confirm(
-  'ATENÇÃO!\n\nIsso apagará vendas, abastecimentos, ajustes e pagamentos do histórico.\n\nOs produtos e os fiados continuarão cadastrados.\n\nDeseja continuar?'
- );
-
-
- if(!confirma) return;
-
-
- try{
-
-  const tabelas=[
-   'pagamentos',
-   'vendas',
-   'abastecimentos',
-   'ajustes_estoque'
-  ];
-
-
-  for(const tabela of tabelas){
-
-   const {error} =
-   await supabaseClient
-   .from(tabela)
-   .delete()
-   .not('id','is',null);
-
-
-   if(error){
-
-    throw error;
-
-   }
-
-  }
-
-
-  alert(
-   'Histórico limpo com sucesso.'
-  );
-
-
-  await carregarBanco();
-
-  renderHistorico();
-
- }
- catch(e){
-
-  alert(
-   'Erro ao limpar histórico:\n'+
-   e.message
-  );
-
- }
-
-}
-
-
-/* =====================================================
- PRODUTOS
-===================================================== */
-
-function renderProdutos(){
-
- const container =
- document.getElementById(
-  'listaProdutos'
- );
-
-
- if(!produtos.length){
-
-  container.innerHTML =
-  '<div class="vazio">Nenhum produto cadastrado.</div>';
-
-  return;
-
- }
-
-
- container.innerHTML =
- produtos.map(p=>{
-
-  const ativo =
-  p.ativo!==false;
-
-  const estoque =
-  ativo
-  ?estoqueProduto(p.id)
-  :0;
-
-
-  return `
-
-  <div class="item">
-
-   <strong>${p.nome}</strong>
-
-   <div class="muted">
-
-    Custo:
-    ${dinheiro(p.custo)}
-
-    • Repasse:
-    ${dinheiro(p.preco_repasse)}
-
-   </div>
-
-
-   ${
-    ativo
-    ?
-    `<span class="tag tag-ok">
-      ATIVO
-     </span>`
-    :
-    `<span class="tag tag-inativo">
-      INATIVO
-     </span>`
-   }
-
-
-   ${
-    ativo
-    ?
-    `<div style="margin-top:7px">
-      Estoque:
-      <strong>${estoque}</strong>
-     </div>`
-    :
-    ''
-   }
-
-
-   <div style="margin-top:10px">
-
-    <button
-     class="btn azul"
-     onclick="alternarProduto('${p.id}',${ativo})">
-
-     ${ativo?'INATIVAR':'ATIVAR'}
-
-    </button>
-
-
-    <button
-     class="btn vermelho"
-     style="margin-top:7px"
-     onclick="excluirProduto('${p.id}')">
-
-     EXCLUIR PRODUTO
-
-    </button>
-
-   </div>
-
-  </div>
-
-  `;
-
- }).join('');
-
-}
-
-
-/* =====================================================
- NOVO PRODUTO
-===================================================== */
-
-async function novoProduto(){
-
- const nome =
- prompt(
-  'Nome do produto:'
- );
-
-
- if(!nome||
-    !nome.trim()){
-
-  return;
-
- }
-
-
- const custo =
- Number(
-  prompt(
-   'Custo do produto:',
-   '0'
-  )
- );
-
-
- const repasse =
- Number(
-  prompt(
-   'Preço de repasse:',
-   '0'
-  )
- );
-
-
- if(custo<0||
-    repasse<0){
-
-  alert(
-   'Valores inválidos.'
-  );
-
-  return;
-
- }
-
-
- const {error} =
- await supabaseClient
- .from('produtos')
- .insert({
-
-  id:crypto.randomUUID(),
-
-  nome:nome.trim(),
-
-  unidade:'unidade',
-
-  custo:custo,
-
-  preco_repasse:repasse,
-
-  ativo:true,
-
-  criado_em:new Date().toISOString()
-
- });
-
-
- if(error){
-
-  alert(
-   'Erro ao criar produto:\n'+
-   error.message
-  );
-
-  return;
-
- }
-
-
- alert(
-  'Produto criado com sucesso!'
- );
-
-
- await carregarBanco();
-
- renderProdutos();
-
-}
-
-
-/* =====================================================
- ATIVAR / INATIVAR
-===================================================== */
-
-async function alternarProduto(
- id,
- ativoAtual
-){
-
- const {error} =
- await supabaseClient
- .from('produtos')
- .update({
-  ativo:!ativoAtual
- })
- .eq('id',id);
-
-
- if(error){
-
-  alert(
-   'Erro:\n'+
-   error.message
-  );
-
-  return;
-
- }
-
-
- await carregarBanco();
-
- renderProdutos();
-
-}
-
-
-/* =====================================================
- EXCLUIR PRODUTO
-===================================================== */
+/* =========================================================
+   DESATIVAR PRODUTO
+========================================================= */
 
 async function excluirProduto(id){
 
- const p =
- produtoPorId(id);
+    const produto =
+    produtos.find(p=>p.id===id);
 
 
- if(!p) return;
+    if(!produto)return;
 
 
- const confirmar =
- confirm(
-  `Excluir o produto "${p.nome}"?\n\nO produto só deve ser excluído se você realmente não precisar mais dele.`
- );
+    const confirmar =
+    confirm(
+        'Deseja excluir/desativar o produto "'+
+        produto.nome+
+        '"?\n\n'+
+        'O produto não será apagado do histórico.'
+    );
 
 
- if(!confirmar) return;
+    if(!confirmar)return;
 
 
- const temMovimentacao =
- abastecimentos.some(
-  a=>a.produto_id===id
- ) ||
- vendas.some(
-  v=>v.produto_id===id
- ) ||
- ajustes.some(
-  a=>a.produto_id===id
- );
+    const {error} =
+    await supabaseClient
+    .from('produtos')
+    .update({
+        ativo:false
+    })
+    .eq('id',id);
 
 
- if(temMovimentacao){
+    if(error){
 
-  alert(
-   'Este produto possui movimentações no histórico.\n\nPor segurança, use INATIVAR em vez de excluir.'
-  );
+        alert(
+            'Erro ao excluir produto:\n'+
+            error.message
+        );
 
-  return;
+        return;
 
- }
-
-
- const {error} =
- await supabaseClient
- .from('produtos')
- .delete()
- .eq('id',id);
+    }
 
 
- if(error){
-
-  alert(
-   'Erro ao excluir:\n'+
-   error.message
-  );
-
-  return;
-
- }
+    alert('Produto desativado.');
 
 
- alert(
-  'Produto excluído.'
- );
-
-
- await carregarBanco();
-
- renderProdutos();
+    await carregarBanco();
 
 }
 
 
-/* =====================================================
- INÍCIO
-===================================================== */
+/* =========================================================
+   HISTÓRICO
+========================================================= */
 
-document
- .querySelectorAll('.flutuante')
- .forEach(el=>{
-  el.style.display='none';
- });
+function montarHistorico(){
 
+    const eventos=[];
+
+
+    vendas.forEach(v=>{
+
+        const produto =
+        produtos.find(
+            p=>p.id===v.produto_id
+        );
+
+
+        eventos.push({
+
+            data:v.data || v.criado_em,
+
+            tipo:'VENDA',
+
+            texto:
+            (produto?.nome || 'Produto')+
+            ' — '+
+            v.quantidade+
+            ' un. — '+
+            money(v.total)
+
+        });
+
+    });
+
+
+    abastecimentos.forEach(a=>{
+
+        const produto =
+        produtos.find(
+            p=>p.id===a.produto_id
+        );
+
+
+        eventos.push({
+
+            data:a.data || a.criado_em,
+
+            tipo:'ABASTECIMENTO',
+
+            texto:
+            (produto?.nome || 'Produto')+
+            ' — entrada de '+
+            a.quantidade+
+            ' un.'
+
+        });
+
+    });
+
+
+    ajustes.forEach(a=>{
+
+        const produto =
+        produtos.find(
+            p=>p.id===a.produto_id
+        );
+
+
+        eventos.push({
+
+            data:a.data || a.criado_em,
+
+            tipo:'AJUSTE',
+
+            texto:
+            (produto?.nome || 'Produto')+
+            ' — '+
+            a.tipo+
+            ' '+
+            a.quantidade+
+            ' un. — '+
+            (a.motivo || '')
+
+        });
+
+    });
+
+
+    fiados.forEach(f=>{
+
+        eventos.push({
+
+            data:f.data || f.criado_em,
+
+            tipo:'FIADO',
+
+            texto:
+            f.cliente_nome+
+            ' — '+
+            money(f.total)
+
+        });
+
+    });
+
+
+    pagamentos.forEach(p=>{
+
+        const fiado =
+        fiados.find(
+            f=>f.id===p.fiado_id
+        );
+
+
+        eventos.push({
+
+            data:p.data || p.criado_em,
+
+            tipo:'PAGAMENTO',
+
+            texto:
+            (fiado?.cliente_nome || 'Cliente')+
+            ' — recebeu '+
+            money(p.valor)
+
+        });
+
+    });
+
+
+    eventos.sort(
+        (a,b)=>
+        String(b.data)
+        .localeCompare(
+            String(a.data)
+        )
+    );
+
+
+    return eventos;
+
+}
+
+
+/* =========================================================
+   LIMPAR HISTÓRICO
+========================================================= */
+
+async function limparHistorico(){
+
+    const confirmar =
+    confirm(
+        'ATENÇÃO!\n\n'+
+        'Isso apagará vendas, fiados, pagamentos, abastecimentos e ajustes.\n\n'+
+        'Os PRODUTOS e CLIENTES serão mantidos.\n\n'+
+        'Deseja continuar?'
+    );
+
+
+    if(!confirmar)return;
+
+
+    const texto =
+    prompt(
+        'Para confirmar, digite:\n\nLIMPAR'
+    );
+
+
+    if(texto!=='LIMPAR'){
+
+        alert('Operação cancelada.');
+
+        return;
+
+    }
+
+
+    try{
+
+        let r;
+
+
+        r=await supabaseClient
+        .from('pagamentos')
+        .delete()
+        .neq('id','00000000-0000-0000-0000-000000000000');
+
+        if(r.error)throw r.error;
+
+
+        r=await supabaseClient
+        .from('fiado_itens')
+        .delete()
+        .neq('id','00000000-0000-0000-0000-000000000000');
+
+        if(r.error)throw r.error;
+
+
+        r=await supabaseClient
+        .from('fiados')
+        .delete()
+        .neq('id','00000000-0000-0000-0000-000000000000');
+
+        if(r.error)throw r.error;
+
+
+        r=await supabaseClient
+        .from('vendas')
+        .delete()
+        .neq('id','00000000-0000-0000-0000-000000000000');
+
+        if(r.error)throw r.error;
+
+
+        r=await supabaseClient
+        .from('abastecimentos')
+        .delete()
+        .neq('id','00000000-0000-0000-0000-000000000000');
+
+        if(r.error)throw r.error;
+
+
+        r=await supabaseClient
+        .from('ajustes_estoque')
+        .delete()
+        .neq('id','00000000-0000-0000-0000-000000000000');
+
+        if(r.error)throw r.error;
+
+
+        alert(
+            'Histórico limpo com sucesso!\n\n'+
+            'Produtos e clientes foram mantidos.'
+        );
+
+
+        await carregarBanco();
+
+    }
+    catch(erro){
+
+        alert(
+            'Erro ao limpar histórico:\n'+
+            erro.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ATUALIZAR PAINEL
+========================================================= */
+
+function atualizarPainel(){
+
+    const dataHoje =
+    hoje();
+
+
+    const vendasHojeLista =
+    vendas.filter(
+        v=>v.data===dataHoje
+    );
+
+
+    const vendasHojeValor =
+    vendasHojeLista
+    .reduce(
+        (s,v)=>s+Number(v.total||0),
+        0
+    );
+
+
+    const unidadesHoje =
+    vendasHojeLista
+    .reduce(
+        (s,v)=>s+Number(v.quantidade||0),
+        0
+    );
+
+
+    const fiadoAberto =
+    fiados
+    .reduce(
+        (s,f)=>
+        s+
+        Math.max(
+            0,
+            Number(f.total||0)-
+            Number(f.pago||0)
+        ),
+        0
+    );
+
+
+    const estoque =
+    produtosAtivos()
+    .reduce(
+        (s,p)=>
+        s+
+        estoqueProduto(p.id),
+        0
+    );
+
+
+    document
+    .getElementById('vendasHoje')
+    .textContent =
+    money(vendasHojeValor);
+
+
+    document
+    .getElementById('fiadoAberto')
+    .textContent =
+    money(fiadoAberto);
+
+
+    document
+    .getElementById('unidadesHoje')
+    .textContent =
+    unidadesHoje;
+
+
+    document
+    .getElementById('estoqueAtual')
+    .textContent =
+    estoque;
+
+}
+
+
+/* =========================================================
+   ESTOQUE
+========================================================= */
+
+function renderEstoque(){
+
+    const div =
+    document.getElementById('listaEstoque');
+
+
+    const lista =
+    produtosAtivos();
+
+
+    if(!lista.length){
+
+        div.innerHTML=
+        '<div class="vazio">'+
+        'Nenhum produto ativo cadastrado.'+
+        '</div>';
+
+        return;
+
+    }
+
+
+    div.innerHTML =
+    lista.map(p=>{
+
+        const estoque =
+        estoqueProduto(p.id);
+
+
+        const classe =
+        estoque<=0
+        ?'red'
+        :'green';
+
+
+        return `
+
+        <div class="linha">
+
+        <div class="linha-topo">
+
+        <strong>
+        ${escapar(p.nome)}
+        </strong>
+
+        <span class="badge ${classe}">
+        ${estoque} ${escapar(p.unidade || 'un.')}
+        </span>
+
+        </div>
+
+        <div style="margin-top:8px;color:#64748b">
+
+        Custo:
+        ${money(p.custo)}
+
+        • Repasse:
+        ${money(p.preco_repasse)}
+
+        </div>
+
+        </div>
+
+        `;
+
+    }).join('');
+
+}
+
+
+/* =========================================================
+   FIADOS
+========================================================= */
+
+function renderFiados(){
+
+    const div =
+    document.getElementById('listaFiados');
+
+
+    const lista =
+    fiados.filter(
+        f=>
+        Number(f.pago||0)<
+        Number(f.total||0)
+    );
+
+
+    if(!lista.length){
+
+        div.innerHTML=
+        '<div class="vazio">'+
+        'Nenhum fiado em aberto.'+
+        '</div>';
+
+        return;
+
+    }
+
+
+    div.innerHTML =
+    lista.map(f=>{
+
+        const aberto =
+        Number(f.total||0)-
+        Number(f.pago||0);
+
+
+        const itens =
+        fiadoItens
+        .filter(
+            i=>i.fiado_id===f.id
+        );
+
+
+        return `
+
+        <div class="linha">
+
+        <div class="linha-topo">
+
+        <strong>
+        ${escapar(f.cliente_nome)}
+        </strong>
+
+        <span class="badge yellow">
+        ${money(aberto)}
+        </span>
+
+        </div>
+
+        <div style="margin-top:10px">
+
+        ${itens.map(i=>`
+
+        <div>
+        ${escapar(i.produto_nome)}
+        —
+        ${i.quantidade} un.
+        —
+        ${money(i.total)}
+        </div>
+
+        `).join('')}
+
+        </div>
+
+        <button
+        class="btn green"
+        style="margin-top:12px"
+        onclick="receberFiado('${f.id}')">
+
+        RECEBER PAGAMENTO
+
+        </button>
+
+        </div>
+
+        `;
+
+    }).join('');
+
+}
+
+
+/* =========================================================
+   PRODUTOS
+========================================================= */
+
+function renderProdutos(){
+
+    const div =
+    document.getElementById('listaProdutos');
+
+
+    if(!produtos.length){
+
+        div.innerHTML=
+        '<div class="vazio">'+
+        'Nenhum produto cadastrado.'+
+        '</div>';
+
+        return;
+
+    }
+
+
+    div.innerHTML =
+    produtos.map(p=>{
+
+        const estoque =
+        estoqueProduto(p.id);
+
+
+        const ativo =
+        p.ativo !== false;
+
+
+        return `
+
+        <div class="linha">
+
+        <div class="linha-topo">
+
+        <strong>
+        ${escapar(p.nome)}
+        </strong>
+
+        <span class="badge ${ativo?'green':'red'}">
+
+        ${ativo?'ATIVO':'INATIVO'}
+
+        </span>
+
+        </div>
+
+        <div style="margin-top:8px">
+
+        Custo:
+        ${money(p.custo)}
+
+        • Repasse:
+        ${money(p.preco_repasse)}
+
+        </div>
+
+        ${
+            ativo
+            ?
+            `
+            <div style="margin-top:8px">
+            Estoque atual:
+            <strong>${estoque}</strong>
+            </div>
+
+            <button
+            class="btn red"
+            style="margin-top:12px"
+            onclick="excluirProduto('${p.id}')">
+
+            EXCLUIR PRODUTO
+
+            </button>
+            `
+            :
+            ''
+        }
+
+        </div>
+
+        `;
+
+    }).join('');
+
+}
+
+
+/* =========================================================
+   HISTÓRICO
+========================================================= */
+
+function renderHistorico(){
+
+    const div =
+    document.getElementById('listaHistorico');
+
+
+    const eventos =
+    montarHistorico();
+
+
+    if(!eventos.length){
+
+        div.innerHTML=
+        '<div class="vazio">'+
+        'Nenhuma movimentação registrada.'+
+        '</div>';
+
+        return;
+
+    }
+
+
+    div.innerHTML =
+    eventos.map(e=>{
+
+        let classe='green';
+
+
+        if(e.tipo==='VENDA')
+        classe='green';
+
+        if(e.tipo==='FIADO')
+        classe='yellow';
+
+        if(e.tipo==='AJUSTE')
+        classe='yellow';
+
+        if(e.tipo==='PAGAMENTO')
+        classe='green';
+
+
+        return `
+
+        <div class="linha">
+
+        <span class="badge ${classe}">
+        ${e.tipo}
+        </span>
+
+        <div style="margin-top:7px">
+        ${escapar(e.texto)}
+        </div>
+
+        <div style="margin-top:5px;color:#64748b;font-size:12px">
+        ${new Date(e.data).toLocaleDateString('pt-BR')}
+        </div>
+
+        </div>
+
+        `;
+
+    }).join('');
+
+}
+
+
+/* =========================================================
+   ATUALIZAR MODAIS
+========================================================= */
+
+function atualizarModal(id){
+
+    if(id==='modalEstoque')
+    renderEstoque();
+
+
+    if(id==='modalFiados')
+    renderFiados();
+
+
+    if(id==='modalHistorico')
+    renderHistorico();
+
+
+    if(id==='modalProdutos')
+    renderProdutos();
+
+
+    if(id==='modalFiado'){
+
+        if(!itensTempFiado.length){
+
+            adicionarItemFiado();
+
+        }
+        else{
+
+            renderItensFiado();
+
+        }
+
+    }
+
+
+    if(id==='modalAbastecer'){
+
+        document
+        .getElementById('aData')
+        .value=hoje();
+
+    }
+
+}
+
+
+/* =========================================================
+   ATUALIZAR TUDO
+========================================================= */
+
+function atualizarTudo(){
+
+    carregarSelects();
+
+    atualizarPainel();
+
+    renderEstoque();
+
+    renderFiados();
+
+    renderProdutos();
+
+    renderHistorico();
+
+}
+
+
+/* =========================================================
+   INÍCIO
+========================================================= */
 
 carregarBanco();
 
